@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#607D8B</color>
+    <color name="colorPrimaryDark">#004754</color>
+    <color name="colorPrimaryLight">#CFD8DC</color>
+    <color name="colorAccent">#FFC107</color>
+    <color name="colorTextPrimary">#ffffff</color>
+    <color name="colorTextSecondary">#727272</color>
+
+    <!-- Pallette Colors -->
+    <color name="primary">#ffffff</color>
+    <color name="primary_dark">#006e80</color>
+    <color name="primary_light">#FFCCBC</color>
+    <color name="accent">#00197f</color>
+    <color name="primary_text">#ffffff</color>
+    <color name="secondary_text">#006e80</color>
+    <color name="icons">#ffffff</color>
+    <color name="divider">#B6B6B6</color>
+    <color name="primary_trans">#ffffff</color>
+
+    <!-- BackGround colors -->
+    <color name="background_dark">#ff363636</color>
+    <color name="background_content">#ff454344</color>
+    <color name="custom_progress_background">#ff3c3a3b</color>
+
+    <color name="primary_text_green">#212121</color>
+
+
+    <!-- MyGreys & Blacks -->
+    <color name="LightGray">#eae9e9</color>
+    <color name="myGrey">#7A7A7A</color>
+    <color name="myTextBlack">#212121</color>
+
+    <!-- MyWhites -->
+    <color name="myWhite">#ffffff</color>
+    <color name="myTransparentWhite">#90ffffff</color>
+
+
+
+    <!-- MyBlues -->
+    <color name="myBlueDark">#002487</color>
+    <color name="mySkyBlueDark">#1A65D6</color>
+    <color name="mySkyBlueLight">#66A8F9</color>
+    <color name="myBlueLight">#7cf4f9</color>
+    <color name="mySkyBlueLight2">#befcff</color>
+
+    <!-- MyReds -->
+    <color name="mySkyRedDark">#f0534a</color>
+    <color name="mySkyRedLight">#ffe0df</color>
+
+
+</resources>

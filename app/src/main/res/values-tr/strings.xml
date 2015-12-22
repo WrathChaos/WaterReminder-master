@@ -1,0 +1,118 @@
+<resources>
+    <string name="app_name">Water Reminder</string>
+    <array name="title_activity_main">Water Reminder</array>
+    <string name="water">Water</string>
+    <string name="logo">logo</string>
+    <string name="desc">Bir bardak su, yaşam boyu sağlık</string>
+    <string name="welcome">Merhaba, </string>
+
+    <string name="textViewFacebook">VEYA</string>
+
+
+    <string name="facebook_app_id">1465490360419578</string>
+
+    <string name="username">Kullanıcı Adı</string>
+
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="e_mail">E-Mail</string>
+    <string name="email_address">E-Mail Address</string>
+    <string name="password">Şifre</string>
+    <string name="sign_in">Sign In</string>
+    <string name="login">Giriş</string>
+    <string name="sex">Cinsiyet</string>
+
+    <string name="daily_water">Günlük Su</string>
+    <string name="water_goal">Günlük Su Hedefi</string>
+
+
+    <string name="title">Title</string>
+
+    <!-- Activities -->
+    <string name="title_activity_registration">RegistrationActivity</string>
+    <string name="title_activity_profile">ProfileActivity</string>
+    <string name="title_activity_register">RegisterActivity</string>
+    <string name="title_activity_login">Water Reminder</string>
+    <string name="title_activity_main2">Main2Activity</string>
+    <string name="title_activity_base_adapter">BaseAdapter</string>
+    <string name="title_activity_base">BaseActivity</string>
+    <string name="title_activity_country">CountryActivity</string>
+
+
+    <!-- Registration and Profile -->
+    <string name="firstName">İsim</string>
+    <string name="lastName">Soyisim</string>
+    <string name="age">Yaş</string>
+    <string name="fullName">Full Name</string>
+    <string name="nickname">Lakap</string>
+
+
+
+    <!-- Navigation Drawer Part -->
+    <string name="openDrawer">openDrawer</string>
+    <string name="closeDrawer">closeDrawer</string>
+    <string name="drawer_open">Open</string>
+    <string name="drawer_close">Close</string>
+
+    <!-- Buttons -->
+    <string name="clear">Clear</string>
+    <string name="registration">Üye Olun!</string>
+    <string name="register">Register</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+    <string name="country">Please select your country</string>
+    <string name="email">E-Mail adresinizi girin</string>
+
+    <!-- Main Part -->
+    <string name="water_consumption">Tüketim Miktarı:</string>
+    <string name="cup">bardak</string>
+    <string name="default_cup">1 bardak</string>
+    <string name="snackbar_water_supply">bardak su eklendi.</string>
+    <string name="snackbar_water_supply_delete">bardak su silindi.</string>
+    <string name="snackbar_water_add_fail">Su eklenemedi! Lütfen tekrar deneyin</string>
+
+    <!-- Devs Name -->
+    <string name="team_0">Kuray OGUN</string>
+    <string name="team_1">Oguz BASARAN</string>
+
+    <!-- Devs Job List -->
+    <string name="team_0_job">Founder * Developer * Designer</string>
+    <string name="team_1_job">Developer</string>
+
+    <!-- Devs Social Links -->
+    <string name="team_0_facebook">https://www.facebook.com/WrathChaos</string>
+    <string name="team_0_twitter">https://twitter.com/FreakyCoderCom</string>
+    <string name="team_0_linkedin">https://tr.linkedin.com/pub/kuray-öğün/43/80b/755</string>
+    <string name="team_0_github">https://github.com/WrathChaos</string>
+
+    <string name="team_1_facebook">https://www.facebook.com/people/O%C4%9Fuz-Ali-Ba%C5%9Faran/680348705</string>
+    <string name="team_1_twitter">https://www.twitter.com/oguzalibasaran</string>
+    <string name="team_1_linkedin">https://www.linkedin.com/pub/o%C4%9Fuz-ali-ba%C5%9Faran/108/873/114</string>
+    <string name="team_1_github">https://github.com/zybzy</string>
+
+    <!-- Water Reminder Notifications -->
+    <string name="notify_title">İşte şimdi tam su içme zamanı!</string>
+    <string name="notify_text">Eğer su kaynağı senin kendi ruhundan fışkırmazsa, susuzluğunu dindiremezsin.</string>
+
+    <!-- Register Part -->
+    <string name="info">Bilgi</string>
+    <string name="got_info">Anladım !</string>
+    <string name="signUp">Hayat sudur! Üye ol ve bu keyfi sende yaşa</string>
+    <string name="title_activity_main">RegisterMainActivity</string>
+    <string name="male">Bay</string>
+    <string name="female">Bayan</string>
+    <string name="title_activity_register_third">RegisterThirdActivity</string>
+
+
+    <!-- Profile Part -->
+    <string name="profile_name">Profil İsmi</string>
+    <string name="change_username">Kullanıcı Adını Değiştir</string>
+    <string name="current_daily_goal">Günlük su girdisi </string>
+    <string name="change_daily_goal">Günlük su girdisini değiştirin</string>
+    <string name="new_value">Yeni bir değer girin</string>
+
+    <!-- Graphs -->
+    <string name="tographs">Grafikler</string>
+
+
+</resources>

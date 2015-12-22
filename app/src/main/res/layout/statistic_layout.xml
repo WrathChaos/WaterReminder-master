@@ -1,0 +1,51 @@
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_below="@+id/textView2"
+    android:layout_alignEnd="@+id/relativeLayout"
+    android:id="@+id/sta_relativeLayout"
+    android:layout_marginTop="10dp"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/sta_icon"
+        android:background="@drawable/ic_history"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Weekly Average"
+        android:textSize="18sp"
+        android:id="@+id/sta_name"
+        android:textColor="@color/primary_trans"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/sta_icon"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="5dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="84 cups"
+        android:textSize="15sp"
+        android:textColor="@color/com_facebook_button_login_silver_background_color_pressed"
+        android:id="@+id/sta_result"
+        android:layout_alignTop="@+id/sta_name"
+        android:layout_alignParentEnd="true" />
+
+    <View
+        android:layout_width="wrap_content"
+        android:layout_height="0.5dp"
+        android:id="@+id/sta_divider"
+        android:layout_marginTop="7dp"
+        android:background="@color/myWhite"
+        android:layout_below="@+id/sta_icon"
+        android:layout_toEndOf="@+id/sta_icon" />
+
+
+</RelativeLayout>
+

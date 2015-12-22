@@ -1,0 +1,45 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.kurayogun_hw2.CountryActivity">
+
+    <include
+        android:id="@+id/include3"
+        layout="@layout/top_side" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/include3"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/activity_horizontal_margin"
+            android:text="@string/country"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            />
+
+        <ListView
+            android:id="@+id/country_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/setting"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="30dp"
+        android:onClick="openSetting"
+        android:background="@drawable/ic_setting_light"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true" />
+
+
+</RelativeLayout>

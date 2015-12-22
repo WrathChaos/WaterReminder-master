@@ -1,0 +1,124 @@
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root_activity_second"
+    tools:context="com.ActivityPlus.LoginFragment"
+    android:isScrollContainer="false"
+    android:background="@drawable/custom_background">
+    <!--app:hintTextAppearance="@style/LoginCustom"-->
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/relativeLayout"
+        >
+
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/user_login_layout"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColorHint="@color/myWhite"
+        android:layout_above="@+id/password_layout"
+        app:hintTextAppearance="@style/LoginCustom"
+        android:layout_centerHorizontal="true">
+        <EditText
+            android:id="@+id/user_login"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableEnd="@drawable/ic_person"
+            android:singleLine="true"
+            android:lines="1"
+            android:hint="@string/email_address"
+            android:textColorHint="@color/colorPrimaryLight"
+            android:layout_marginLeft="16dp"
+            android:textColor="@color/colorPrimaryLight"
+            android:layout_marginRight="16dp"
+            android:layout_above="@+id/password_layout"
+            android:layout_centerHorizontal="true" />
+
+    </android.support.design.widget.TextInputLayout>
+
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/password_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColorHint="@color/myWhite"
+
+        android:layout_above="@+id/classicLoginButton"
+        android:layout_alignStart="@+id/user_login_layout"
+        app:hintTextAppearance="@style/LoginCustom"
+        android:layout_alignEnd="@+id/user_login_layout">
+
+        <EditText
+            android:id="@+id/input_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:singleLine="true"
+            android:lines="1"
+            android:textColorHint="@color/icons"
+            android:textColor="@color/icons"
+            android:hint="@string/password"
+            android:drawableEnd="@drawable/ic_password"
+            android:inputType="textPassword" />
+
+    </android.support.design.widget.TextInputLayout>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="classicLogin"
+        android:text="@string/login"
+        android:textAllCaps="false"
+        android:background="@drawable/custom_button"
+        android:textColor="@android:color/white"
+        android:theme="@style/LoginButtonCustom"
+        android:layout_above="@+id/textViewFacebook"
+        android:id="@+id/classicLoginButton"
+        android:layout_alignStart="@+id/password_layout"
+        android:layout_alignEnd="@+id/password_layout"
+       />
+
+    <TextView
+        android:text="@string/textViewFacebook"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textViewFacebook"
+        android:layout_marginTop="83dp"
+        android:layout_alignTop="@+id/login_button"
+        android:layout_centerHorizontal="true" />
+
+
+
+    <com.facebook.login.widget.LoginButton
+        android:id="@+id/login_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="212dp"
+        android:layout_alignEnd="@+id/classicLoginButton"
+        android:layout_alignStart="@+id/classicLoginButton" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="registerButton"
+        android:text="@string/registration"
+        android:textAllCaps="false"
+        android:background="@drawable/custom_button"
+        android:textColor="@android:color/white"
+        android:id="@+id/registerButton"
+        android:layout_below="@+id/textViewFacebook"
+        android:layout_marginTop="40dp"
+        android:layout_alignStart="@+id/login_button"
+        android:layout_alignEnd="@+id/login_button" />
+
+    </RelativeLayout>
+
+</android.support.design.widget.CoordinatorLayout>

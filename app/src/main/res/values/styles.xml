@@ -1,0 +1,65 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+
+        <!-- Customize your theme here. -->
+        <item name="colorPrimaryDark">@color/myTextBlack</item>
+        <item name="colorPrimary">@color/colorPrimaryLight</item>
+        <item name="android:textColor">@color/myTextBlack</item>
+        <item name="android:colorAccent">@color/myTextBlack</item>
+
+        <item name="android:colorControlActivated">@color/myTextBlack</item>
+        <item name="android:colorControlNormal">@color/myTextBlack</item>
+        <item name="android:colorControlHighlight">@color/myTextBlack</item>
+
+        <!-- Status Bar Transparent -->
+        <item name="android:windowTranslucentStatus">true</item>
+
+
+    </style>
+
+
+    <style name="menu_labels_style">
+        <item name="android:background">@drawable/ic_home</item>
+        <item name="android:textColor">@color/primary_trans</item>
+    </style>
+
+    <style name="AppTheme.Switch">
+        <item name="colorPrimaryDark">@color/primary_text_green</item>
+        <item name="colorPrimary">@color/primary_text_green</item>
+        <item name="android:textColor">@color/primary_text_green</item>
+        <item name="android:textColorPrimary">@color/colorPrimaryLight</item>
+    </style>
+
+
+    <style name="TextAppearance.App.TextInputLayout" parent="@android:style/TextAppearance">
+        <item name="android:colorAccent">@color/myTextBlack</item>
+        <item name="android:textColor">@color/myTextBlack</item>
+    </style>
+
+    <style name="LoginCustom" parent="@android:style/TextAppearance">
+        <item name="android:colorAccent">@color/myWhite</item>
+        <item name="android:textColor">@color/myWhite</item>
+    </style>
+
+
+    <style name="LoginButtonCustom" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:colorControlActivated">@color/icons</item>
+        <item name="android:colorControlNormal">@color/myBlueLight</item>
+        <item name="android:colorControlHighlight">@color/myBlueLight</item>
+    </style>
+
+    <style name="RegisterCustom" parent="@android:style/TextAppearance">
+        <item name="android:colorControlNormal">@color/myTextBlack</item>
+        <item name="android:colorControlActivated">@color/myTextBlack</item>
+        <item name="android:colorControlHighlight">@color/myTextBlack</item>
+        <item name="android:colorAccent">@color/myTextBlack</item>
+        <item name="android:textColor">@color/myTextBlack</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+</resources>
