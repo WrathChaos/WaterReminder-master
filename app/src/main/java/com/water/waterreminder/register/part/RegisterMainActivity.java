@@ -8,9 +8,11 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -18,12 +20,15 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.water.waterreminder.DBAdapter;
+import com.water.waterreminder.MainActivity;
 import com.water.waterreminder.R;
 
 public class RegisterMainActivity extends AppCompatActivity {
 
     EditText editText;
     com.github.clans.fab.FloatingActionButton fab;
+    private GestureDetector gestureDetector;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,8 +53,76 @@ public class RegisterMainActivity extends AppCompatActivity {
 
         editText = (EditText) findViewById(R.id.e_mail);
         fab = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.fab);
+        gestureDetector = new GestureDetector(new SwipeGestureDetector());
         openRegister();
     }
+
+
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (gestureDetector.onTouchEvent(event)) {
+            return true;
+        }
+        return super.onTouchEvent(event);
+    }
+
+    private void onLeftSwipe() {
+        if(editText.getText().toString().equals("")){
+            Toast.makeText(getApplicationContext(),"Please enter your email, seems you missed that part :)",Toast.LENGTH_SHORT).show();
+        }else {
+            saveShared();
+            Intent i = new Intent(getApplicationContext(), RegisterSecondActivity.class);
+            startActivity(i);
+        }
+    }
+
+    private void onRightSwipe() {
+        if(editText.getText().toString().equals("")){
+            Toast.makeText(getApplicationContext(),"Please enter your email, seems you missed that part :)",Toast.LENGTH_SHORT).show();
+        }else {
+            saveShared();
+            Intent i = new Intent(getApplicationContext(), RegisterSecondActivity.class);
+            startActivity(i);
+        }
+    }
+
+    // Private class for gestures
+    private class SwipeGestureDetector
+            extends GestureDetector.SimpleOnGestureListener {
+        // Swipe properties, you can change it to make the swipe
+        // longer or shorter and speed
+        private static final int SWIPE_MIN_DISTANCE = 120;
+        private static final int SWIPE_MAX_OFF_PATH = 200;
+        private static final int SWIPE_THRESHOLD_VELOCITY = 200;
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2,
+                               float velocityX, float velocityY) {
+            try {
+                float diffAbs = Math.abs(e1.getY() - e2.getY());
+                float diff = e1.getX() - e2.getX();
+
+                if (diffAbs > SWIPE_MAX_OFF_PATH)
+                    return false;
+
+                // Left swipe
+                if (diff > SWIPE_MIN_DISTANCE
+                        && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+                    RegisterMainActivity.this.onLeftSwipe();
+
+                    // Right swipe
+                } else if (-diff > SWIPE_MIN_DISTANCE
+                        && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+                    RegisterMainActivity.this.onRightSwipe();
+                }
+            } catch (Exception e) {
+                Log.e("YourActivity", "Error on gestures");
+            }
+            return false;
+        }
+    }
+
 
     public void saveShared(){
         SharedPreferences prefs = getSharedPreferences("user_info", MODE_PRIVATE);
