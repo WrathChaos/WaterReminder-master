@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Build;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -42,6 +44,9 @@ public class LoginActivity extends AppCompatActivity implements TransparentStatu
     String user_login;
     String password;
 
+    SoundPool mySound;
+    int soundID;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +61,8 @@ public class LoginActivity extends AppCompatActivity implements TransparentStatu
 
         db = new DBAdapter(getApplicationContext());
 
+        mySound = new SoundPool(1, AudioManager.STREAM_MUSIC,0);
+        soundID = mySound.load(this,R.raw.watersound,1);
         // Opening the database for reading data
         try {
             db.open();
@@ -87,6 +94,7 @@ public class LoginActivity extends AppCompatActivity implements TransparentStatu
 
     public void classicLogin(View view) {
         Intent intent = new Intent(this,MainActivity.class);
+        mySound.play(soundID,1,1,1,0,1);
 
         user_login = mInputUserLogin.getText().toString().toLowerCase();
         password = mInputPassword.getText().toString();

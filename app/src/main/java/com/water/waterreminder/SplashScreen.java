@@ -1,6 +1,8 @@
 package com.water.waterreminder;
 
 import android.content.Intent;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -10,16 +12,19 @@ import android.view.View;
  */
 public class SplashScreen extends AppCompatActivity {
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash);
 
+
         Thread timerThread = new Thread(){
             public void run(){
                 try{
-                    sleep(2000);
+
+                    sleep(1000);
                 }catch(InterruptedException e){
                     e.printStackTrace();
                 }finally{
