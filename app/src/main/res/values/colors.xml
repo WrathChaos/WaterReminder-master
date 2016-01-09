@@ -34,6 +34,7 @@
     <!-- MyWhites -->
     <color name="myWhite">#ffffff</color>
     <color name="myTransparentWhite">#90ffffff</color>
+    <color name="transperent">#00ffffff</color>
 
 
 

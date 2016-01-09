@@ -4,17 +4,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
 import android.text.InputType;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -24,13 +20,11 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.water.waterreminder.anim.AnimationUtils;
 import com.water.waterreminder.anim.ColoredSnackbar;
 import com.water.waterreminder.pojos.Statistic;
 
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -148,7 +142,6 @@ public class ProfileActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int whichButton) {
                 int new_goal = Integer.parseInt(new_water_goal.getText().toString());
                 int update = db.updateWaterGoal(username.toLowerCase(), new_goal);
-
                 if (update > 0) {
                     current_water_goal.setText(new_goal + "");
                     SharedPreferences.Editor editor = prefs.edit();

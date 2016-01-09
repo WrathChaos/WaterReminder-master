@@ -5,8 +5,10 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Color;
-import android.graphics.Paint;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -38,12 +40,13 @@ import com.water.waterreminder.anim.ColoredSnackbar;
 import com.water.waterreminder.notification.NotifyService;
 import com.water.waterreminder.secretText.SecretTextView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import static com.github.mikephil.charting.animation.Easing.EasingOption.EaseInOutBounce;
+import static com.github.mikephil.charting.animation.Easing.EasingOption.EaseInOutQuad;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -83,6 +86,15 @@ public class MainActivity extends AppCompatActivity {
     public static long interval = 1000*60*60*8;
     public static PendingIntent pendingIntentNotification;
 
+    //Water Sound
+    SoundPool mySound;
+    int soundID;
+
+
+    //User ID
+    int user_id;
+
+    String now;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +115,10 @@ public class MainActivity extends AppCompatActivity {
         fab_complete = (FloatingActionButton) findViewById(R.id.fab_complete);
         total_water_textView = (TextView) findViewById(R.id.daily_total_water);
 
+        //Water Sound
+        mySound = new SoundPool(1, AudioManager.STREAM_MUSIC,0);
+        soundID = mySound.load(this,R.raw.watersound,1);
+
         //Graph Variables
         chart = (BarChart) findViewById(R.id.chart);
         btngraphs = (Button) findViewById(R.id.btngrph);
@@ -121,18 +137,10 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e){
             e.printStackTrace();
         }
-
-        //Functions
-        setWaterValue();
-        arcProgressFunctionWater();
-        actionButtonClick();
-
-        drawGrahps();
-
         //Notification
         SharedPreferences prefs = getSharedPreferences("user_info", MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
-        int active = prefs.getInt("notify_active",1);
+        int active = prefs.getInt("notify_active", 1);
 
         if(active <2){
             alarmMethod(alarmmanager1);
@@ -140,24 +148,96 @@ public class MainActivity extends AppCompatActivity {
             editor.putInt("notify_active",active);
             editor.apply();
             }
+            int exact_day = getTheCurrentDay();
+            Cursor cursor = db.getDBDay(username);
+            int db_day = cursor.getInt(0);
+            Log.d("MyApp", "DB Day : "+db_day);
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            now = df.format(new Date());
+
+
+
+            Log.d("MyApp", "Exact_Day : " + exact_day);
+
+            Cursor cursor3 = db.getUserID(username);
+            user_id = cursor3.getInt(0);
+        if(db.checkDateTableisEmpty()) {
+            Log.d("MyApp", "date table is empty ! User ID : " + user_id + "\nValue : " + getWater() + "\nDate : " + now);
+            db.insertDate(user_id, getWater(), now, getTheCurrentDay());
+        }else{
+            if(db_day != exact_day){
+                Cursor cursor2 = db.getUserID(username);
+                user_id = cursor2.getInt(0);
+                db.updateDailyWaterValue(username, 0);
+                Log.d("MyApp", "Day is different ! "+"\n+Exact_day : "+exact_day);
+                editor.putInt("daily_water", 0);
+                editor.apply();
+                db.updateDay(exact_day, username);
+            }
+            if (!db.checkDateValue(user_id, now)) {
+                Log.d("MyApp", "Table is exist !User ID : " + user_id + "\nValue : " + getWater() + "\nDate : " + now);
+                db.insertDate(user_id, getWater(), now, getTheCurrentDay());
+            }
+        }
+        //Functions
+        setWaterValue();
+        arcProgressFunctionWater();
+        actionButtonClick();
+        if (!db.checkDateTableisEmpty()) {
+            drawGrahps(db.getDateCount(user_id));
+        }
 
     }
 
-    public void drawGrahps(){
+    public int getWater(){
+        Cursor getWater = db.getDailyWaterValue(username, password);
+        if(getWater != null){
+            int water = getWater.getInt(0);
+            return water;
+        }
+        return 0;
+
+    }
+
+    public int getTheCurrentDay() {
+        Calendar calendar = Calendar.getInstance();
+        int day = calendar.get(Calendar.DAY_OF_WEEK);
+        day--;
+        Log.d("MyApp", "TheCurrentDay : "+day);
+        return day;
+    }
+
+    public void drawGrahps(int count){
         //Graphs
         ArrayList<BarEntry> entries = new ArrayList<>();
-        entries.add(new BarEntry(4f, 0));
-        entries.add(new BarEntry(8f, 1));
-        entries.add(new BarEntry(6f, 2));
-        entries.add(new BarEntry(5f, 3));
-        entries.add(new BarEntry(10f, 4));
-        entries.add(new BarEntry(9f, 5));
-        entries.add(new BarEntry(7f, 6));
+        count--;
+        Cursor values = db.getDateValue(user_id);
+        Log.d("MyApp", "Count : "+count);
+        if(values != null && count >=7 ) {
+            for (int i = count; i > count-7; i--) {
+                float a_side = (float)values.getInt(0);
+                int b_side = values.getInt(1);
+                //b_side--;
+                Log.d("MyApp", "Count>=7: " + values.getInt(0) + " ----- : "+b_side);
+                entries.add(new BarEntry(a_side, b_side));
+                values.moveToNext();
+            }
+        } else if(values != null && count <7){
+            for (int i = 1; i <=count; i++) {
+                //Log.d("MyApp", "fck it  : " + values.getInt(1));
+                float a_side = (float)values.getInt(0);
+                int b_side = values.getInt(1);
+                //b_side--;
+                Log.d("MyApp", "Count>=7: " + values.getInt(0) + " ----- : "+b_side);
+                entries.add(new BarEntry(a_side, b_side));
+                values.moveToNext();
+            }
+        }
 
         BarDataSet dataset = new BarDataSet(entries, "Number of Glasses Drunk in a Week");
         dataset.setValueTextSize(10);
         dataset.setBarSpacePercent(25f);
-
+        //dataset.setColor(getResources().getColor(R.color.myWhite));
         ArrayList<String> labels = new ArrayList<String>();
 
         labels.add("Sun");
@@ -168,20 +248,17 @@ public class MainActivity extends AppCompatActivity {
         labels.add("Fri");
         labels.add("Sat");
 
-
         BarData data = new BarData(labels,dataset);
 
         LimitLine ll = new LimitLine(daily_goal);
         ll.setLineColor(Color.BLUE);
-        ll.setLineWidth(4f);
-
+        ll.setLineWidth(1f);
 
         chart.setData(data);
         chart.setDrawValueAboveBar(false);
 
-
         YAxis y1 = chart.getAxisLeft();
-        y1.setAxisMaxValue(daily_goal);
+        y1.setAxisMaxValue(daily_goal + 1);
         y1.setLabelCount(8, true);
         y1.setStartAtZero(true);
         y1.setDrawGridLines(false);
@@ -196,7 +273,8 @@ public class MainActivity extends AppCompatActivity {
 
         chart.setDescription("");
         chart.setTouchEnabled(false);
-        chart.animateY(3000, EaseInOutBounce);
+        chart.animateY(3500, EaseInOutQuad);
+
     }
 
     public void tographs(View view){
@@ -294,19 +372,31 @@ public class MainActivity extends AppCompatActivity {
 
                 total_water_textView.setText(daily_water + " / " + daily_goal);
                 change_water_perc = (daily_water / (daily_goal * 1.0)) * 100;
-                arcProgressFunctionWater();
 
                 int update = db.updateDailyWaterValue(username.toLowerCase(), daily_water);
                 Log.d("MyApp", "Water Value Updated : " + update);
                 if (add_water_value > 0 && update != 0) {
                     Snackbar snackbar = Snackbar.make(findViewById(R.id.anchor), add_water_value + " "+getResources().getString(R.string.snackbar_water_supply) +" !", Snackbar.LENGTH_SHORT);
                     ColoredSnackbar.info(snackbar).show();
+                    int flag = db.updateCurrentValue(daily_water, user_id,now);
+                    Log.d("MyApp", "Current Value is updated ?: " + flag +"\nValue : "+daily_water);
+                    arcProgressFunctionWater();
+                    if (!db.checkDateTableisEmpty()) {
+                        drawGrahps(db.getDateCount(user_id));
+                    }
                 } else if (add_water_value == 0 || update == 0) {
                     Snackbar snackbar = Snackbar.make(findViewById(R.id.anchor), getResources().getString(R.string.snackbar_water_add_fail)+" !", Snackbar.LENGTH_LONG);
                     ColoredSnackbar.info(snackbar).show();
                 } else if (add_water_value < 0 && update != 0) {
-                    Snackbar snackbar = Snackbar.make(findViewById(R.id.anchor), 1 + " "+getResources().getString(R.string.snackbar_water_supply_delete) +" !", Snackbar.LENGTH_LONG);
+                    Snackbar snackbar = Snackbar.make(findViewById(R.id.anchor), 1 + " " + getResources().getString(R.string.snackbar_water_supply_delete) + " !", Snackbar.LENGTH_SHORT);
                     ColoredSnackbar.info(snackbar).show();
+                    int flag = db.updateCurrentValue(daily_water, user_id,now);
+
+                    Log.d("MyApp", "Current Value is updated ?: " + flag +"\nValue : "+daily_water+"\nDate : "+now);
+                    arcProgressFunctionWater();
+                    if (!db.checkDateTableisEmpty()) {
+                        drawGrahps(db.getDateCount(user_id));
+                    }
                 }
                 fadeOut();
                 floatingActionsMenu.collapse();
@@ -318,6 +408,9 @@ public class MainActivity extends AppCompatActivity {
                         secretTextView2.setText(add_water_value + "  "+getResources().getString(R.string.cup));
                     }
                 };
+
+                //Water Sound Play
+                mySound.play(soundID,1,1,1,0,1);
 
                 Handler myHandler = new Handler();
                 myHandler.postDelayed(mMyRunnable, 900); //Message will be delivered in 0.9 second.

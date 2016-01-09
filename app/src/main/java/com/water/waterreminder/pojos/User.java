@@ -17,6 +17,7 @@ public class User {
     private int weekly_water;
     private int montly_water;
     private int yearly_water;
+    private int exact_day;
 
 
     //Default Constructor
@@ -149,5 +150,13 @@ public class User {
 
     public void setYearly_water(int yearly_water) {
         this.yearly_water = yearly_water;
+    }
+
+    public int getExact_day() {
+        return exact_day;
+    }
+
+    public void setExact_day(int exact_day) {
+        this.exact_day = exact_day;
     }
 }

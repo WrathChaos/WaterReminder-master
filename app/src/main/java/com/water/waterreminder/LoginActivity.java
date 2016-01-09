@@ -1,6 +1,7 @@
 package com.water.waterreminder;
 
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -19,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
@@ -117,12 +119,16 @@ public class LoginActivity extends AppCompatActivity implements TransparentStatu
 
                 db.close();
                 startActivity(intent);
-            }else{
-                // FIXME: 23/11/15 Fix this snackbar it appears into the bottom bar
-                //Toast.makeText(getApplicationContext(),"Email or Password is wrong! Try to register.",Toast.LENGTH_LONG).show();
-                Snackbar snackbar = Snackbar.make(findViewById(R.id.relativeLayout),"Email or Password is wrong! Try to register.",Snackbar.LENGTH_LONG);
-                ColoredSnackbar.info(snackbar).show();
+            } else{
 
+                //Preventing & Closing Pop-Keyboard Immediately
+                InputMethodManager inputManager = (InputMethodManager)
+                        getSystemService(Context.INPUT_METHOD_SERVICE);
+
+                inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                        InputMethodManager.HIDE_NOT_ALWAYS);
+                Snackbar snackbar = Snackbar.make(findViewById(R.id.relativeLayout), "E-Mail OR Password is not Correct\nPlease Check again ", Snackbar.LENGTH_SHORT);
+                ColoredSnackbar.info(snackbar).show();
             }
 
     }

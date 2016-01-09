@@ -29,7 +29,6 @@ public class RegisterMainActivity extends AppCompatActivity {
     com.github.clans.fab.FloatingActionButton fab;
     private GestureDetector gestureDetector;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,8 +55,6 @@ public class RegisterMainActivity extends AppCompatActivity {
         gestureDetector = new GestureDetector(new SwipeGestureDetector());
         openRegister();
     }
-
-
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -123,14 +120,12 @@ public class RegisterMainActivity extends AppCompatActivity {
         }
     }
 
-
     public void saveShared(){
         SharedPreferences prefs = getSharedPreferences("user_info", MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         String email = editText.getText().toString();
         if(email.contains("@"))
             editor.putString("user_email", email);
-
 
         editor.apply(); // This line is IMPORTANT.
     }
@@ -163,7 +158,6 @@ public class RegisterMainActivity extends AppCompatActivity {
         });
     }
 
-
     @Override
     public boolean dispatchKeyEvent(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
@@ -177,7 +171,6 @@ public class RegisterMainActivity extends AppCompatActivity {
                 return true;
             }
         }
-
         return super.dispatchKeyEvent(e);
     }
 
@@ -206,7 +199,6 @@ public class RegisterMainActivity extends AppCompatActivity {
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 }

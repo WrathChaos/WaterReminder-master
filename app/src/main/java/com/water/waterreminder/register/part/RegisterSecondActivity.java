@@ -30,7 +30,6 @@ public class RegisterSecondActivity extends AppCompatActivity {
     EditText editText ;
     EditText editText2;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

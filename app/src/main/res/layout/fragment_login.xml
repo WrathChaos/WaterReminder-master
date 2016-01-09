@@ -4,7 +4,6 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/root_activity_second"
-    tools:context="com.ActivityPlus.LoginFragment"
     android:isScrollContainer="false"
     android:background="@drawable/custom_background">
     <!--app:hintTextAppearance="@style/LoginCustom"-->

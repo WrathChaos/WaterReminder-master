@@ -37,8 +37,6 @@ public class MonthlyYearlyGraphsActivity extends AppCompatActivity {
         LineChart chart = (LineChart) findViewById(R.id.chart3);
         LineChart chart2 = (LineChart) findViewById(R.id.chart2);
 
-
-
         ArrayList<Entry> entries = new ArrayList<>(); //yearly
         entries.add(new Entry(4f, 1));
         entries.add(new Entry(4f, 2));
@@ -63,10 +61,7 @@ public class MonthlyYearlyGraphsActivity extends AppCompatActivity {
         entries2.add(new Entry(5f, 6));
         entries2.add(new Entry(10f, 7));
         entries2.add(new Entry(13f, 8));
-        entries2.add(new Entry(25f, 9));
-
-
-
+        entries2.add(new Entry(24f, 9));
 
 
         LineDataSet dataset = new LineDataSet(entries,"Average Number of Glasses Drunk Yearly"); //yearly
@@ -79,7 +74,7 @@ public class MonthlyYearlyGraphsActivity extends AppCompatActivity {
         dataset2.setDrawCubic(true);
         dataset2.setDrawFilled(true);
         dataset2.setValueTextSize(10);
-        dataset2.setFillColor(Color.GREEN);
+        dataset2.setFillColor(Color.WHITE);
 
 
         ArrayList<String> labels = new ArrayList<String>(); //yearly
@@ -113,44 +108,49 @@ public class MonthlyYearlyGraphsActivity extends AppCompatActivity {
         labels2.add("52");
 
 
-
-
         LineData data = new LineData(labels,dataset); //yearly
         LineData data2 = new LineData(labels2,dataset2); //monthly
 
         chart.setData(data); //yearly
-        chart.setPadding(10, 0, 0, 0);
+        //chart.setPadding(120, 20, 20, 20);
         chart2.setData(data2); //monthly
+
+        LimitLine ll = new LimitLine(water_goal);
+        ll.setLineColor(Color.WHITE);
+        ll.setLineWidth(1f);
 
 
         YAxis y1 = chart.getAxisLeft();
         y1.setAxisMaxValue(water_goal);
         y1.setLabelCount(8, true);
-        y1.setStartAtZero(true);//
-        Log.d("MyApp", "Water Goal in Graph : " + water_goal);
+        y1.setStartAtZero(true);
         y1.setDrawGridLines(false);
+        y1.setAxisLineColor(getResources().getColor(R.color.myWhite));
+        y1.setGridColor(getResources().getColor(R.color.myWhite));
+        y1.setTextColor(getResources().getColor(R.color.myWhite));
+
 
         YAxis y12 = chart.getAxisRight();       // YEARLY X-Y INFO
         y12.setEnabled(false);
 
-
         XAxis x1 = chart.getXAxis();
         x1.setSpaceBetweenLabels(1);
         x1.setDrawGridLines(false);
+        x1.setAxisLineColor(getResources().getColor(R.color.myWhite));
+        x1.setGridColor(getResources().getColor(R.color.myWhite));
+        x1.setTextColor(getResources().getColor(R.color.myWhite));
 
         ////////////////////////////////////////////////////////////////////////
 
-
-        LimitLine ll = new LimitLine(35);
-        ll.setLineColor(Color.GRAY);
-        ll.setLineWidth(1f);
 
         YAxis y2 = chart2.getAxisLeft();
         y2.setAxisMaxValue(water_goal);
         y2.setLabelCount(8, true);
         y2.setStartAtZero(true);//
         y2.setDrawGridLines(false);
-        y2.addLimitLine(ll);
+        y2.setAxisLineColor(getResources().getColor(R.color.myWhite));
+        y2.setGridColor(getResources().getColor(R.color.myWhite));
+        y2.setTextColor(getResources().getColor(R.color.myWhite));
 
 
         YAxis y22 = chart2.getAxisRight();      // MONTHLY X-Y INFO
@@ -159,15 +159,25 @@ public class MonthlyYearlyGraphsActivity extends AppCompatActivity {
         XAxis x2 = chart2.getXAxis();
         x2.setSpaceBetweenLabels(3);
         x2.setDrawGridLines(false);
+        x2.setAxisLineColor(getResources().getColor(R.color.myWhite));
+        x2.setGridColor(getResources().getColor(R.color.myWhite));
+        x2.setTextColor(getResources().getColor(R.color.myWhite));
 
 
         chart.setDescription("");               //yearly
         chart.animateY(3000, EaseInOutBack);  //yearly
         chart.setTouchEnabled(false);
+        chart.setDrawGridBackground(false);
+        chart.setBorderColor(getResources().getColor(R.color.myWhite));
+        chart.setBackgroundColor(getResources().getColor(R.color.transperent));
+
 
         chart2.setDescription("");              //monthly
-        chart2.animateY(3000,EaseOutSine);  //monthly
+        chart2.animateY(3000, EaseOutSine);  //monthly
         chart2.setTouchEnabled(false);
+        chart2.setDrawGridBackground(false);
+        chart2.setBorderColor(getResources().getColor(R.color.myWhite));
+        chart2.setBackgroundColor(getResources().getColor(R.color.transperent));
     }
 
 

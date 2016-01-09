@@ -50,9 +50,6 @@ public class CountryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registercountry);
 
-
-
-
         // If the database already exist no need to copy it from the assets
         // folder
         try {
