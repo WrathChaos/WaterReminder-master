@@ -36,6 +36,7 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.water.waterreminder.anim.ColoredSnackbar;
 import com.water.waterreminder.notification.NotifyService;
 import com.water.waterreminder.secretText.SecretTextView;
@@ -237,6 +238,7 @@ public class MainActivity extends AppCompatActivity {
         BarDataSet dataset = new BarDataSet(entries, "Number of Glasses Drunk in a Week");
         dataset.setValueTextSize(10);
         dataset.setBarSpacePercent(25f);
+        dataset.setValueFormatter(new MyValueFormatter());
         //dataset.setColor(getResources().getColor(R.color.myWhite));
         ArrayList<String> labels = new ArrayList<String>();
 
@@ -256,6 +258,7 @@ public class MainActivity extends AppCompatActivity {
 
         chart.setData(data);
         chart.setDrawValueAboveBar(false);
+        //chart.setDrawBorders(true);
 
         YAxis y1 = chart.getAxisLeft();
         y1.setAxisMaxValue(daily_goal + 1);
