@@ -1,6 +1,7 @@
 package com.water.waterreminder;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Bundle;
@@ -12,12 +13,13 @@ import android.view.View;
  */
 public class SplashScreen extends AppCompatActivity {
 
+    SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash);
+        prefs = getSharedPreferences("user_info", MODE_PRIVATE);
 
 
         Thread timerThread = new Thread(){
@@ -27,8 +29,15 @@ public class SplashScreen extends AppCompatActivity {
                 }catch(InterruptedException e){
                     e.printStackTrace();
                 }finally{
-                    Intent intent = new Intent(SplashScreen.this,LoginActivity.class);
-                    startActivity(intent);
+                    String username = prefs.getString("username",null);
+                    if(username == null){
+                        Intent intent = new Intent(SplashScreen.this,LoginActivity.class);
+                        startActivity(intent);
+                    }else {
+                        Intent intent = new Intent(SplashScreen.this,MainActivity.class);
+                        startActivity(intent);
+                    }
+
                 }
             }
         };

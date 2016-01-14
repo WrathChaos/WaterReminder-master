@@ -422,7 +422,7 @@ public class DBAdapter extends SQLiteOpenHelper {
         while(cursor.moveToNext()) {
             if (cursor.getString(0).equals(now)) {
                 //Log.d("MyApp", "DB Date : " + cursor.getString(0) + "\nCurrent Now : " + now);
-                Log.d("MyApp", "date is exist");
+                Log.d("MyApp", "date is exist and date : "+ cursor.getString(0));
                 return true;
             }
         }
@@ -431,16 +431,17 @@ public class DBAdapter extends SQLiteOpenHelper {
                 return false;
     }
 
-    public boolean checkDateTableisEmpty(){
-        SQLiteDatabase db = this.getWritableDatabase();
-        String count = "SELECT count(*) FROM "+DATABASE_TABLE_DATE;
-        Cursor mcursor = db.rawQuery(count, null);
-        mcursor.moveToFirst();
-        int icount = mcursor.getInt(0);
-        if(icount>0)
-            return false;
-        else
+    public boolean checkDateTableIDEmpty(int user_id){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String sql = "SELECT " + KEY_DATE_ID + " FROM " + DATABASE_TABLE_DATE + " WHERE " + KEY_DATE_ID + "=" + user_id;
+
+       // String count = "SELECT count(*) FROM "+DATABASE_TABLE_DATE;
+        Cursor mCursor = db.rawQuery(sql, null);
+        if(mCursor.moveToFirst()){
             return true;
+        }else{
+            return false;
+        }
     }
 
 

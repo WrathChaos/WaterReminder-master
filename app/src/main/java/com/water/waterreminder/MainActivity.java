@@ -74,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
 
     DBAdapter db;
     SharedPreferences prefs;
+    SharedPreferences.Editor editor;
 
     String username;
     String password;
@@ -139,13 +140,13 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         //Notification
-        SharedPreferences prefs = getSharedPreferences("user_info", MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
+        editor = prefs.edit();
         int active = prefs.getInt("notify_active", 1);
 
         if(active <2){
             alarmMethod(alarmmanager1);
             active++;
+            Log.d("MyApp", "acvite : "+active);
             editor.putInt("notify_active",active);
             editor.apply();
             }
@@ -156,35 +157,35 @@ public class MainActivity extends AppCompatActivity {
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
             now = df.format(new Date());
 
-
-
             Log.d("MyApp", "Exact_Day : " + exact_day);
 
             Cursor cursor3 = db.getUserID(username);
             user_id = cursor3.getInt(0);
-        if(db.checkDateTableisEmpty()) {
+
+        if(!db.checkDateTableIDEmpty(user_id)) {
             Log.d("MyApp", "date table is empty ! User ID : " + user_id + "\nValue : " + getWater() + "\nDate : " + now);
             db.insertDate(user_id, getWater(), now, getTheCurrentDay());
         }else{
             if(db_day != exact_day){
-                Cursor cursor2 = db.getUserID(username);
-                user_id = cursor2.getInt(0);
-                db.updateDailyWaterValue(username, 0);
-                Log.d("MyApp", "Day is different ! "+"\n+Exact_day : "+exact_day);
-                editor.putInt("daily_water", 0);
-                editor.apply();
-                db.updateDay(exact_day, username);
+                    Cursor cursor2 = db.getUserID(username);
+                    user_id = cursor2.getInt(0);
+                    db.updateDailyWaterValue(username, 0);
+                    Log.d("MyApp", "Day is different ! " + "\n+Exact_day : " + exact_day);
+                    editor.putInt("daily_water", 0);
+                    editor.apply();
+                    db.updateDay(exact_day, username);
+                }
             }
             if (!db.checkDateValue(user_id, now)) {
                 Log.d("MyApp", "Table is exist !User ID : " + user_id + "\nValue : " + getWater() + "\nDate : " + now);
                 db.insertDate(user_id, getWater(), now, getTheCurrentDay());
             }
-        }
+
         //Functions
         setWaterValue();
         arcProgressFunctionWater();
         actionButtonClick();
-        if (!db.checkDateTableisEmpty()) {
+        if (db.checkDateTableIDEmpty(user_id)) {
             drawGrahps(db.getDateCount(user_id));
         }
 
@@ -273,7 +274,6 @@ public class MainActivity extends AppCompatActivity {
         XAxis x1 = chart.getXAxis();
         x1.setDrawGridLines(false);
 
-
         chart.setDescription("");
         chart.setTouchEnabled(false);
         chart.animateY(3500, EaseInOutQuad);
@@ -290,8 +290,17 @@ public class MainActivity extends AppCompatActivity {
         //SharedPreferences Getting Items
         daily_goal = prefs.getInt("daily_goal_water", 0);
         daily_water = prefs.getInt("daily_water",0);
+        /*
+        Cursor cursor = db.getDailyWaterValue(username,password);
+        if(cursor.moveToFirst()) {
+            daily_water = cursor.getInt(0);
+            Log.d("MyApp", "Daily Water from DB : " + cursor.getInt(0));
+        } else{
+            int flag = db.updateCurrentValue(0, user_id,now);
+            Log.d("MyApp", "Water is changed by registeration : 0"+"Flag : "+flag);
+        }*/
 
-        Log.d("MyApp", "Daily Water from DB : " + daily_water);
+        Log.d("MyApp", "Daily Water From Shared : "+prefs.getInt("daily_water",0));
         total_water_textView.setText(daily_water + " / " + daily_goal);
     }
 
@@ -379,12 +388,15 @@ public class MainActivity extends AppCompatActivity {
                 int update = db.updateDailyWaterValue(username.toLowerCase(), daily_water);
                 Log.d("MyApp", "Water Value Updated : " + update);
                 if (add_water_value > 0 && update != 0) {
-                    Snackbar snackbar = Snackbar.make(findViewById(R.id.anchor), add_water_value + " "+getResources().getString(R.string.snackbar_water_supply) +" !", Snackbar.LENGTH_SHORT);
+                    Snackbar snackbar = Snackbar.make(findViewById(R.id.anchor), add_water_value + " " + getResources().getString(R.string.snackbar_water_supply) + " !", Snackbar.LENGTH_SHORT);
                     ColoredSnackbar.info(snackbar).show();
                     int flag = db.updateCurrentValue(daily_water, user_id,now);
-                    Log.d("MyApp", "Current Value is updated ?: " + flag +"\nValue : "+daily_water);
+                    //editor = prefs.edit();
+                    editor.putInt("daily_water", daily_water);
+                    editor.apply();
+                    Log.d("MyApp", "Current Value is updated ?: " + flag +"\nValue : "+prefs.getInt("daily_water",10));
                     arcProgressFunctionWater();
-                    if (!db.checkDateTableisEmpty()) {
+                    if (db.checkDateTableIDEmpty(user_id)) {
                         drawGrahps(db.getDateCount(user_id));
                     }
                 } else if (add_water_value == 0 || update == 0) {
@@ -394,10 +406,11 @@ public class MainActivity extends AppCompatActivity {
                     Snackbar snackbar = Snackbar.make(findViewById(R.id.anchor), 1 + " " + getResources().getString(R.string.snackbar_water_supply_delete) + " !", Snackbar.LENGTH_SHORT);
                     ColoredSnackbar.info(snackbar).show();
                     int flag = db.updateCurrentValue(daily_water, user_id,now);
-
+                    editor.putInt("daily_water", daily_water);
+                    editor.apply();
                     Log.d("MyApp", "Current Value is updated ?: " + flag +"\nValue : "+daily_water+"\nDate : "+now);
                     arcProgressFunctionWater();
-                    if (!db.checkDateTableisEmpty()) {
+                    if (db.checkDateTableIDEmpty(user_id)) {
                         drawGrahps(db.getDateCount(user_id));
                     }
                 }
@@ -463,6 +476,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void logOut(View view) {
         db.close();
+        editor.clear();
+        editor.commit();
+        Log.d("MyApp", "Logout ! ");
         Intent i = new Intent(this, LoginActivity.class);
         startActivity(i);
     }
