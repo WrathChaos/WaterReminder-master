@@ -35,7 +35,7 @@ dependencies {
     compile 'com.github.lzyzsd:circleprogress:1.1.0@aar'                // Progress Bar
     compile 'com.getbase:floatingactionbutton:1.10.0'                   // Floating Button
     compile 'com.github.clans:fab:1.6.1'                                //FAB BUTTON
-    compile 'com.github.PhilJay:MPAndroidChart:v2.1.6'                  //Charts
+    compile 'com.github.PhilJay:MPAndroidChart:v2.1.6'                  //Charts PhilJay:MPAndroidChart
 
     //compile 'com.parse.bolts:bolts-android:1.+'   //Parse.com
     //compile 'com.parse:parse-android:1.+'         //Parse.com

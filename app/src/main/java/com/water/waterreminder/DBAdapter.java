@@ -34,6 +34,8 @@ public class DBAdapter extends SQLiteOpenHelper {
     public static final String KEY_MONTLY = "montly_water";
     public static final String KEY_YEARLY = "yearly_water";
     public static final String KEY_EXACT_DAY = "exact_day";
+    public static final String KEY_AVERAGE = "average";
+
 
     //Date Table
     public static final String KEY_DATE_ID = "date_id";
@@ -41,13 +43,32 @@ public class DBAdapter extends SQLiteOpenHelper {
     public static final String KEY_DATE = "date";
     public static final String KEY_CURRENT_DATE = "current_day";
 
+
+    //Month Table
+    public static final String KEY_MONTH_ID = "date_id";
+    public static final String KEY_YEAR = "year";
+    public static final String KEY_JAN = "Jan";
+    public static final String KEY_FEB = "Feb";
+    public static final String KEY_MAR = "Mar";
+    public static final String KEY_APR = "Apr";
+    public static final String KEY_MAY = "May";
+    public static final String KEY_JUN = "Jun";
+    public static final String KEY_JUL = "Jul";
+    public static final String KEY_AUG = "Aug";
+    public static final String KEY_SEPT = "Sept";
+    public static final String KEY_OCT = "Oct";
+    public static final String KEY_NOV = "Nov";
+    public static final String KEY_DEC = "Dec";
+
     private static final String TAG = "DBAdapter";
 
     private static final String DATABASE_NAME = "MyDB";
     private static final String DATABASE_TABLE = "User";
     private static final String DATABASE_TABLE_DATE = "User_Date";
+    private static final String DATABASE_TABLE_MONTH = "User_Month";
 
-    private static final int DATABASE_VERSION = 11;
+
+    private static final int DATABASE_VERSION = 14;
 
     private static final String DATABASE_CREATE = "CREATE TABLE `User` (\n" +
             "\t`id`\tINTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\n" +
@@ -62,7 +83,8 @@ public class DBAdapter extends SQLiteOpenHelper {
             "\t`weekly_water`\tINTEGER,\n" +
             "\t`montly_water`\tINTEGER,\n" +
             "\t`yearly_water`\tINTEGER,\n" +
-            "\t`exact_day`\tINTEGER\n" +
+            "\t`exact_day`\tTEXT,\n" +
+            "\t`average`\tNUMERIC\n" +
             ");";
 
     private static final String DATABASE_CREATE_DATE = "CREATE TABLE `User_Date` (\n" +
@@ -70,6 +92,23 @@ public class DBAdapter extends SQLiteOpenHelper {
             "\t`value`\tINTEGER,\n" +
             "\t`date`\tTEXT,\n" +
             "\t`current_day`\tINTEGER\n" +
+            ");";
+
+    private static final String DATABASE_CREATE_MONTH = "CREATE TABLE `User_Month` (\n" +
+            "\t`date_id`\tINTEGER,\n" +
+            "\t`year`\tINTEGER,\n" +
+            "\t`Jan`\tINTEGER,\n" +
+            "\t`Feb`\tINTEGER,\n" +
+            "\t`Mar`\tINTEGER,\n" +
+            "\t`Apr`\tINTEGER,\n" +
+            "\t`May`\tINTEGER,\n" +
+            "\t`Jun`\tINTEGER,\n" +
+            "\t`Jul`\tINTEGER,\n" +
+            "\t`Aug`\tINTEGER,\n" +
+            "\t`Sept`\tINTEGER,\n" +
+            "\t`Oct`\tINTEGER,\n" +
+            "\t`Nov`\tINTEGER,\n" +
+            "\t`Dec`\tINTEGER\n" +
             ");";
 
     public DBAdapter(Context context) {
@@ -84,6 +123,7 @@ public class DBAdapter extends SQLiteOpenHelper {
         try {
             db.execSQL(DATABASE_CREATE_DATE);
             db.execSQL(DATABASE_CREATE);
+            db.execSQL(DATABASE_CREATE_MONTH);
 
         } catch (android.database.SQLException e) {
             e.printStackTrace();
@@ -241,6 +281,8 @@ public class DBAdapter extends SQLiteOpenHelper {
 
         String sql = "SELECT " + KEY_ROWID + " FROM " + DATABASE_TABLE + " WHERE " + KEY_NAME + "='" + user_login.toLowerCase() + "'";
         String sql2 = "SELECT " + KEY_ROWID + " FROM " + DATABASE_TABLE + " WHERE " + KEY_EMAIL + "='" + user_login.toLowerCase() + "'";
+        Log.d("MyApp", "SQL 1 : "+sql);
+        Log.d("MyApp", "SQL 2 : "+sql2);
 
         Cursor cursor = db.rawQuery(sql, null);
         if (cursor.moveToFirst()) {
@@ -319,8 +361,8 @@ public class DBAdapter extends SQLiteOpenHelper {
         }
     }
 
-    //Insert exact_day
-    public int updateDay(int day, String user_login) {
+    //Update exact_day
+    public int updateDay(String day, String user_login) {
                SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -419,13 +461,13 @@ public class DBAdapter extends SQLiteOpenHelper {
         cursor.moveToFirst();
         Log.d("MyApp", "DB Date : " + cursor.getString(0) + "\nCurrent Now : " + now);
 
-        while(cursor.moveToNext()) {
+        do {
             if (cursor.getString(0).equals(now)) {
                 //Log.d("MyApp", "DB Date : " + cursor.getString(0) + "\nCurrent Now : " + now);
                 Log.d("MyApp", "date is exist and date : "+ cursor.getString(0));
                 return true;
             }
-        }
+        }while(cursor.moveToNext());
                 Log.d("MyApp", "Current Now : "+now);
                 Log.d("MyApp", "date is NOT exist");
                 return false;
@@ -444,6 +486,35 @@ public class DBAdapter extends SQLiteOpenHelper {
         }
     }
 
+    public double getSumWaterValue(int user_id){
+        SQLiteDatabase db = this.getReadableDatabase();
+        double sum = 0.0;
+        String sql = " SELECT "+ KEY_VALUE +" FROM "+ DATABASE_TABLE_DATE +" WHERE "+ KEY_DATE_ID + "=" + user_id;
+        Log.d("MyApp", "sql sum : "+sql);
+        Cursor cursor = db.rawQuery(sql, null);
+        if (cursor.moveToFirst()) {
+            do{
+                sum += cursor.getDouble(0);
+            }while (cursor.moveToNext());
+        }
+        Log.d("MyApp", "Sum : "+sum);
+        return sum;
+    }
+
+    public int getSumOfMonth(int user_id,String month){
+        SQLiteDatabase db = this.getReadableDatabase();
+        int sum = 0;
+        String sql = "SELECT "+KEY_VALUE+" FROM "+ DATABASE_TABLE_DATE + " WHERE "+ KEY_DATE_ID + " = "+user_id + " AND " + " STRFTIME ('%m',"+KEY_DATE+")="+"'"+month+"'";
+        Log.d("MyApp", "Month Sum SQL : "+sql);
+        Cursor cursor = db.rawQuery(sql,null);
+        if(cursor.moveToFirst()) {
+            do {
+                sum += cursor.getInt(0);
+            } while (cursor.moveToNext());
+        }
+        Log.d("MyApp", "Month Sum :"+sum);
+        return sum;
+    }
 
     // Getting All Users
     public List<User> getAllUsers() {

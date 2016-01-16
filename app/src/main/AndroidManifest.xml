@@ -106,12 +106,15 @@
             android:name=".register.part.RegisterThirdActivity"
             android:label="@string/title_activity_register_third"
             android:theme="@style/AppTheme" />
-        <activity android:name=".MonthlyYearlyGraphsActivity" />
+        <activity android:name=".GraphActivity"
+            android:screenOrientation="sensorLandscape"
+
+            />
 
         <service
             android:name=".notification.NotifyService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
     </application>
 
 </manifest>

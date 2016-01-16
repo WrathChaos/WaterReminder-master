@@ -36,7 +36,6 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.water.waterreminder.anim.ColoredSnackbar;
 import com.water.waterreminder.notification.NotifyService;
 import com.water.waterreminder.secretText.SecretTextView;
@@ -95,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
 
     //User ID
     int user_id;
-
+    //Current Date
     String now;
 
     @Override
@@ -137,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
             db.open();
             Log.d("MyApp", "DB has opened in MainActivity!");
         } catch (Exception e){
+            Log.d("MyApp", " DB has NOT opened in MainActivity!");
             e.printStackTrace();
         }
         //Notification
@@ -150,36 +150,42 @@ public class MainActivity extends AppCompatActivity {
             editor.putInt("notify_active",active);
             editor.apply();
             }
-            int exact_day = getTheCurrentDay();
-            Cursor cursor = db.getDBDay(username);
-            int db_day = cursor.getInt(0);
-            Log.d("MyApp", "DB Day : "+db_day);
+
+
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
             now = df.format(new Date());
 
+            String exact_day = now;
             Log.d("MyApp", "Exact_Day : " + exact_day);
+            Log.d("MyApp", "username : "+username);
 
             Cursor cursor3 = db.getUserID(username);
             user_id = cursor3.getInt(0);
 
+
         if(!db.checkDateTableIDEmpty(user_id)) {
             Log.d("MyApp", "date table is empty ! User ID : " + user_id + "\nValue : " + getWater() + "\nDate : " + now);
             db.insertDate(user_id, getWater(), now, getTheCurrentDay());
+            db.updateDay(now, username);
         }else{
-            if(db_day != exact_day){
+            Cursor cursor = db.getDBDay(username);
+            String db_day = cursor.getString(0);
+            Log.d("MyApp", "DB Day : "+db_day);
+            if(!db_day.equals(exact_day)){
                     Cursor cursor2 = db.getUserID(username);
                     user_id = cursor2.getInt(0);
                     db.updateDailyWaterValue(username, 0);
-                    Log.d("MyApp", "Day is different ! " + "\n+Exact_day : " + exact_day);
+                    Log.d("MyApp", "Day is different ! " + "\n+Exact_day1 : " + exact_day + "\nDB Day1 : " + db_day);
                     editor.putInt("daily_water", 0);
                     editor.apply();
                     db.updateDay(exact_day, username);
                 }
-            }
             if (!db.checkDateValue(user_id, now)) {
-                Log.d("MyApp", "Table is exist !User ID : " + user_id + "\nValue : " + getWater() + "\nDate : " + now);
+                Log.d("MyApp", "Table is exist! User ID : " + user_id + "\nValue : " + getWater() + "\nDate : " + now);
                 db.insertDate(user_id, getWater(), now, getTheCurrentDay());
+              }
             }
+
 
         //Functions
         setWaterValue();
@@ -201,6 +207,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
     public int getTheCurrentDay() {
         Calendar calendar = Calendar.getInstance();
         int day = calendar.get(Calendar.DAY_OF_WEEK);
@@ -212,7 +219,7 @@ public class MainActivity extends AppCompatActivity {
     public void drawGrahps(int count){
         //Graphs
         ArrayList<BarEntry> entries = new ArrayList<>();
-        count--;
+        //count--;
         Cursor values = db.getDateValue(user_id);
         Log.d("MyApp", "Count : "+count);
         if(values != null && count >=7 ) {
@@ -281,7 +288,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void tographs(View view){
-        Intent i = new Intent(this, MonthlyYearlyGraphsActivity.class);
+        Intent i = new Intent(this, GraphActivity.class);
         startActivity(i);
     }
 

@@ -6,24 +6,21 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_status_bar"
-    tools:context="com.water.waterreminder.MonthlyYearlyGraphsActivity">
+    tools:context=".GraphActivity">
 
-    <com.github.mikephil.charting.charts.LineChart
-        android:id="@+id/chart2"
-        android:background="@color/transperent"
+    <com.github.mikephil.charting.charts.HorizontalBarChart
+        android:id="@+id/hori_barchart"
         android:layout_width="match_parent"
-        android:layout_height="125dp"
-        android:layout_alignParentTop="true"
-        />
+        android:layout_height="105dp"/>
 
 
     <com.github.mikephil.charting.charts.LineChart
-        android:id="@+id/chart3"
+        android:id="@+id/yearly_chart"
         android:background="@color/transperent"
         android:layout_width="match_parent"
-        android:layout_height="135dp"
+        android:layout_height="105dp"
         android:layout_marginTop="30dp"
-        android:layout_below="@+id/chart2"
+        android:layout_below="@+id/hori_barchart"
         android:layout_alignParentStart="true" />
 
 </RelativeLayout>
