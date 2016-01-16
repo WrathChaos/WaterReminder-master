@@ -21,6 +21,7 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import static com.github.mikephil.charting.animation.Easing.EasingOption.EaseInOutBack;
 
@@ -65,29 +66,19 @@ public class GraphActivity extends AppCompatActivity {
 
         ArrayList<Entry> entries = new ArrayList<>(); //yearly
 
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+
         for(int i =1; i<10; i++){
-            int month_sum = db.getSumOfMonth(user_id,"0"+i);
-            Log.d("MyApp", " Graph "+i+" : "+month_sum);
+            int month_sum = db.getSumOfMonth(user_id,"0"+i,year);
+            //Log.d("MyApp", " Graph "+i+" : "+month_sum);
             entries.add(new Entry(month_sum, i));
         }
         for(int i=10; i<=12; i++){
-            int month_sum = db.getSumOfMonth(user_id,""+i);
-            Log.d("MyApp", " Graph "+i+" : "+month_sum);
+            int month_sum = db.getSumOfMonth(user_id,""+i,year);
+            //Log.d("MyApp", " Graph "+i+" : "+month_sum);
             entries.add(new Entry(month_sum, i));
         }
-/*
-        entries.add(new Entry(4f, 2));
-        entries.add(new Entry(1f, 3));
-        entries.add(new Entry(3f, 4));
-        entries.add(new Entry(6f, 5));
-        entries.add(new Entry(7f, 6));
-        entries.add(new Entry(9f, 7));
-        entries.add(new Entry(4f, 8));
-        entries.add(new Entry(8f, 9));
-        entries.add(new Entry(2f, 10));
-        entries.add(new Entry(10f, 11));
-        entries.add(new Entry(4f, 12));
-*/
 
         LineDataSet dataset = new LineDataSet(entries,"Average Number of Glasses Drunk Yearly"); //yearly
         dataset.setDrawCubic(true);

@@ -44,31 +44,14 @@ public class DBAdapter extends SQLiteOpenHelper {
     public static final String KEY_CURRENT_DATE = "current_day";
 
 
-    //Month Table
-    public static final String KEY_MONTH_ID = "date_id";
-    public static final String KEY_YEAR = "year";
-    public static final String KEY_JAN = "Jan";
-    public static final String KEY_FEB = "Feb";
-    public static final String KEY_MAR = "Mar";
-    public static final String KEY_APR = "Apr";
-    public static final String KEY_MAY = "May";
-    public static final String KEY_JUN = "Jun";
-    public static final String KEY_JUL = "Jul";
-    public static final String KEY_AUG = "Aug";
-    public static final String KEY_SEPT = "Sept";
-    public static final String KEY_OCT = "Oct";
-    public static final String KEY_NOV = "Nov";
-    public static final String KEY_DEC = "Dec";
-
     private static final String TAG = "DBAdapter";
 
     private static final String DATABASE_NAME = "MyDB";
     private static final String DATABASE_TABLE = "User";
     private static final String DATABASE_TABLE_DATE = "User_Date";
-    private static final String DATABASE_TABLE_MONTH = "User_Month";
 
 
-    private static final int DATABASE_VERSION = 14;
+    private static final int DATABASE_VERSION = 15;
 
     private static final String DATABASE_CREATE = "CREATE TABLE `User` (\n" +
             "\t`id`\tINTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\n" +
@@ -94,23 +77,6 @@ public class DBAdapter extends SQLiteOpenHelper {
             "\t`current_day`\tINTEGER\n" +
             ");";
 
-    private static final String DATABASE_CREATE_MONTH = "CREATE TABLE `User_Month` (\n" +
-            "\t`date_id`\tINTEGER,\n" +
-            "\t`year`\tINTEGER,\n" +
-            "\t`Jan`\tINTEGER,\n" +
-            "\t`Feb`\tINTEGER,\n" +
-            "\t`Mar`\tINTEGER,\n" +
-            "\t`Apr`\tINTEGER,\n" +
-            "\t`May`\tINTEGER,\n" +
-            "\t`Jun`\tINTEGER,\n" +
-            "\t`Jul`\tINTEGER,\n" +
-            "\t`Aug`\tINTEGER,\n" +
-            "\t`Sept`\tINTEGER,\n" +
-            "\t`Oct`\tINTEGER,\n" +
-            "\t`Nov`\tINTEGER,\n" +
-            "\t`Dec`\tINTEGER\n" +
-            ");";
-
     public DBAdapter(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -123,7 +89,6 @@ public class DBAdapter extends SQLiteOpenHelper {
         try {
             db.execSQL(DATABASE_CREATE_DATE);
             db.execSQL(DATABASE_CREATE);
-            db.execSQL(DATABASE_CREATE_MONTH);
 
         } catch (android.database.SQLException e) {
             e.printStackTrace();
@@ -501,10 +466,10 @@ public class DBAdapter extends SQLiteOpenHelper {
         return sum;
     }
 
-    public int getSumOfMonth(int user_id,String month){
+    public int getSumOfMonth(int user_id,String month,int year){
         SQLiteDatabase db = this.getReadableDatabase();
         int sum = 0;
-        String sql = "SELECT "+KEY_VALUE+" FROM "+ DATABASE_TABLE_DATE + " WHERE "+ KEY_DATE_ID + " = "+user_id + " AND " + " STRFTIME ('%m',"+KEY_DATE+")="+"'"+month+"'";
+        String sql = "SELECT "+KEY_VALUE+" FROM "+ DATABASE_TABLE_DATE + " WHERE "+ KEY_DATE_ID + " = " + user_id + " AND STRFTIME ('%Y',"+KEY_DATE+")="+"'"+year+"'"+" AND " + " STRFTIME ('%m',"+KEY_DATE+")="+"'"+month+"'";
         Log.d("MyApp", "Month Sum SQL : "+sql);
         Cursor cursor = db.rawQuery(sql,null);
         if(cursor.moveToFirst()) {
