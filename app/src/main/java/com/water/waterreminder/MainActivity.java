@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
     int daily_goal;
     int daily_water;
 
+
     FloatingActionsMenu floatingActionsMenu;
     FloatingActionButton fab1;
     FloatingActionButton fab2;
@@ -194,8 +195,8 @@ public class MainActivity extends AppCompatActivity {
         if (db.checkDateTableIDEmpty(user_id)) {
             drawGrahps(db.getDateCount(user_id));
         }
-
     }
+
 
     public int getWater(){
         Cursor getWater = db.getDailyWaterValue(username, password);
@@ -206,7 +207,6 @@ public class MainActivity extends AppCompatActivity {
         return 0;
 
     }
-
 
     public int getTheCurrentDay() {
         Calendar calendar = Calendar.getInstance();
@@ -219,6 +219,7 @@ public class MainActivity extends AppCompatActivity {
     public void drawGrahps(int count){
         //Graphs
         ArrayList<BarEntry> entries = new ArrayList<>();
+        int[] list = new int[7];
         //count--;
         Cursor values = db.getDateValue(user_id);
         Log.d("MyApp", "Count : "+count);
@@ -227,19 +228,32 @@ public class MainActivity extends AppCompatActivity {
                 float a_side = (float)values.getInt(0);
                 int b_side = values.getInt(1);
                 //b_side--;
-                Log.d("MyApp", "Count>=7: " + values.getInt(0) + " ----- : "+b_side);
-                entries.add(new BarEntry(a_side, b_side));
+                Log.d("MyApp", "Count>=7: " + values.getInt(0) + " ----- : " + b_side);
+                if(list[b_side]<=0)
+                    list[b_side] = (int)a_side;
+
                 values.moveToNext();
             }
+            for(int j=0; j<=count; j++) {
+                entries.add(new BarEntry(list[j], j));
+                Log.d("MyApp", "list : "+list[j]);
+            }
+
         } else if(values != null && count <7){
             for (int i = 1; i <=count; i++) {
                 //Log.d("MyApp", "fck it  : " + values.getInt(1));
                 float a_side = (float)values.getInt(0);
                 int b_side = values.getInt(1);
                 //b_side--;
-                Log.d("MyApp", "Count>=7: " + values.getInt(0) + " ----- : "+b_side);
-                entries.add(new BarEntry(a_side, b_side));
+                Log.d("MyApp", "Count>=7: " + values.getInt(0) + " ----- : " + b_side);
+                if(list[b_side]<=0)
+                    list[b_side] = (int) a_side;
+                Log.d("MyApp", "A_SIDE : "+a_side+"\nB_SIDE : "+b_side+"\nlist : "+list[6]);
                 values.moveToNext();
+            }
+            for(int j=0; j<=6; j++) {
+                entries.add(new BarEntry(list[j], j));
+                Log.d("MyApp", "list : " + list[j]);
             }
         }
 

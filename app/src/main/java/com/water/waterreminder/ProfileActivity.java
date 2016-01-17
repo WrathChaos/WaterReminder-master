@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
@@ -40,11 +41,15 @@ public class ProfileActivity extends AppCompatActivity {
     TextView profileName;
     TextView current_water_goal;
 
+    DBAdapter db;
     SharedPreferences prefs;
     String username;
     String password;
     int shared_water_goal;
-    DBAdapter db;
+    double sum;
+    double avg;
+    //User ID
+    int user_id;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,8 +60,6 @@ public class ProfileActivity extends AppCompatActivity {
         profileName = (TextView)findViewById(R.id.profile_name);
         current_water_goal = (TextView) findViewById(R.id.current_daily_goal_value);
 
-        fillStatistics();
-        recyclerView.setAdapter(new MyRecyclerAdapter(this, list));
 
         db = new DBAdapter(getApplicationContext());
 
@@ -73,8 +76,20 @@ public class ProfileActivity extends AppCompatActivity {
         //Capitalize the first letter of username
         String output = firstLetterCapital(username);
         profileName.setText(output);
+        Cursor cursor3 = db.getUserID(username);
+        user_id = cursor3.getInt(0);
+
+        fillStatistics();
+        recyclerView.setAdapter(new MyRecyclerAdapter(this, list));
+
+    }
 
 
+    public void getAvg(){
+        sum = db.getSumWaterValue(user_id);
+        int count = db.getDateCount(user_id);
+
+        avg = sum / count;
     }
 
     public String firstLetterCapital(String input){
@@ -167,6 +182,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
 
+
     @Override
     public void onBackPressed() {
        startActivity(new Intent(this,MainActivity.class));
@@ -177,12 +193,11 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     public void fillStatistics(){
-            list.add(new Statistic(R.drawable.ic_info,"Weekly Average","84 cups"));
-            list.add(new Statistic(R.drawable.ic_history,"Daily Average","10 cups"));
+            float avg = prefs.getFloat("average",0);
+            list.add(new Statistic(R.drawable.ic_info,"Average",avg+" cups"));
             list.add(new Statistic(R.drawable.ic_settings_special,"Best Streak","14 days"));
             list.add(new Statistic(R.drawable.ic_person,"Current Streak","4 days"));
             list.add(new Statistic(R.drawable.ic_password,"Achivement","114 victory !"));
-
     }
 
     //MyRecyclerAdapter Inner Class

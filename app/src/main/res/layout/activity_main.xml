@@ -164,6 +164,13 @@
                 android:onClick="tographs"
                 android:layout_above="@+id/chart"
                 android:layout_alignParentEnd="true" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageView2"
+                android:layout_alignBottom="@+id/btngrph"
+                android:layout_alignEnd="@+id/fab_complete" />
         </RelativeLayout>
 
 

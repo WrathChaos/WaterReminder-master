@@ -5,11 +5,9 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -30,6 +28,8 @@ public class GraphActivity extends AppCompatActivity {
     DBAdapter db;
 
     SharedPreferences prefs;
+    SharedPreferences.Editor editor;
+
     int water_goal;
     int user_id;
     String username;
@@ -41,10 +41,12 @@ public class GraphActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_monthly_yearly_graphs);
+        setContentView(R.layout.activity_graphs);
 
         db = new DBAdapter(getApplicationContext());
         prefs = getSharedPreferences("user_info", MODE_PRIVATE);
+        editor = prefs.edit();
+
         water_goal = prefs.getInt("daily_goal_water", 0);
         username = prefs.getString("username","Username cannot be found in GraphActivity");
 
@@ -58,6 +60,8 @@ public class GraphActivity extends AppCompatActivity {
         int count = db.getDateCount(user_id);
 
         avg = sum / count;
+        editor.putFloat("average",(float)avg);
+        editor.apply(); // This line is IMPORTANT
 
         drawGrahps();
     }
