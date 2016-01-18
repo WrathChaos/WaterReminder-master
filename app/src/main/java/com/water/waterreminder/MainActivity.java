@@ -1,9 +1,7 @@
 package com.water.waterreminder;
 
 import android.annotation.TargetApi;
-import android.app.AlarmManager;
 import android.app.Dialog;
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -26,7 +24,6 @@ import android.view.animation.AlphaAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
@@ -39,7 +36,6 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.water.waterreminder.anim.ColoredSnackbar;
-import com.water.waterreminder.notification.NotifyService;
 import com.water.waterreminder.secretText.SecretTextView;
 
 import java.text.SimpleDateFormat;
@@ -88,9 +84,7 @@ public class MainActivity extends AppCompatActivity {
     BarChart chart;
 
     //Notification
-    public static AlarmManager alarmmanager1;
     public static long interval = 1000*60*60*8;
-    public static PendingIntent pendingIntentNotification;
 
     //Water Sound
     SoundPool mySound;
@@ -134,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
 
         db = new DBAdapter(getApplicationContext());
         prefs = getSharedPreferences("user_info", MODE_PRIVATE);
-
+        editor = prefs.edit();
 
         username = prefs.getString("username","Username cannot be found in MainActivity");
         password = prefs.getString("password","Password cannot be found in MainActivity");
@@ -147,18 +141,6 @@ public class MainActivity extends AppCompatActivity {
             Log.d("MyApp", " DB has NOT opened in MainActivity!");
             e.printStackTrace();
         }
-        //Notification
-        editor = prefs.edit();
-        int active = prefs.getInt("notify_active", 1);
-
-        if(active <2){
-            alarmMethod(alarmmanager1);
-            active++;
-            Log.d("MyApp", "acvite : "+active);
-            editor.putInt("notify_active",active);
-            editor.apply();
-            }
-
 
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
             now = df.format(new Date());
@@ -328,7 +310,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d("MyApp", "Water is changed by registeration : 0"+"Flag : "+flag);
         }*/
 
-        Log.d("MyApp", "Daily Water From Shared : "+prefs.getInt("daily_water",0));
+        Log.d("MyApp", "Daily Water From Shared : " + prefs.getInt("daily_water", 0));
         total_water_textView.setText(daily_water + " / " + daily_goal);
     }
 
@@ -344,6 +326,7 @@ public class MainActivity extends AppCompatActivity {
         fadeInAnimation.setFillAfter(true); // make the transformation persist
         fab_complete.setAnimation(fadeInAnimation);
         fab.setAnimation(fadeInAnimation);
+
     }
 
     public void fadeOut(){
@@ -354,121 +337,118 @@ public class MainActivity extends AppCompatActivity {
         fab_complete.setVisibility(View.INVISIBLE);
         fab.setVisibility(View.INVISIBLE);
 
-
         AlphaAnimation fadeOutAnimation = new AlphaAnimation(1, 0); // start alpha, end alpha
         fadeOutAnimation.setDuration(1000); // time for animation in milliseconds
         fadeOutAnimation.setFillAfter(true); // make the transformation persist
         fab_complete.setAnimation(fadeOutAnimation);
         fab.setAnimation(fadeOutAnimation);
-
     }
 
     //Floating ActionButtonMenu Click Function
     public void actionButtonClick() {
-
-        floatingActionsMenu.setOnFloatingActionsMenuUpdateListener(new FloatingActionsMenu.OnFloatingActionsMenuUpdateListener() {
-            @Override
-            public void onMenuExpanded() {
-                fadeIn();
-            }
-
-            @Override
-            public void onMenuCollapsed() {
-                fadeOut();
-            }
-        });
-
-        //Expanded Buttons' onClickListener
-        fab1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (add_water_value < 12) {
-                    add_water_value++;
-                    secretTextView2.setText("  "+add_water_value + " "+getResources().getString(R.string.cup));
-                } else {
-                    add_water_value = 12;
-                    secretTextView2.setText("  "+add_water_value + " "+getResources().getString(R.string.cup));
+            floatingActionsMenu.setOnFloatingActionsMenuUpdateListener(new FloatingActionsMenu.OnFloatingActionsMenuUpdateListener() {
+                @Override
+                public void onMenuExpanded() {
+                    fadeIn();
                 }
-            }
-        });
-        fab2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (add_water_value > -1) {
-                    if (daily_water > 0) {
-                        add_water_value--;
-                        secretTextView2.setText("  "+add_water_value + " "+getResources().getString(R.string.cup));
+
+                @Override
+                public void onMenuCollapsed() {
+                    fadeOut();
+                }
+            });
+
+            //Expanded Buttons' onClickListener
+            fab1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (add_water_value < 12) {
+                        add_water_value++;
+                        secretTextView2.setText("  " + add_water_value + " " + getResources().getString(R.string.cup));
                     } else {
-                        add_water_value = 1;
-                        secretTextView2.setText("  "+add_water_value + " "+getResources().getString(R.string.cup));
-
-                    }
-                } else {
-                    add_water_value = -1;
-                    secretTextView2.setText("  "+add_water_value + " "+getResources().getString(R.string.cup));
-                }
-            }
-        });
-
-        fab_complete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                daily_water += add_water_value;
-                Log.d("MyApp", "Add_Water_Value : " + add_water_value);
-                Log.d("MyApp", "Daily_Water : " + daily_water);
-
-                total_water_textView.setText(daily_water + " / " + daily_goal);
-                change_water_perc = (daily_water / (daily_goal * 1.0)) * 100;
-
-                int update = db.updateDailyWaterValue(username.toLowerCase(), daily_water);
-                Log.d("MyApp", "Water Value Updated : " + update);
-                if (add_water_value > 0 && update != 0) {
-                    Snackbar snackbar = Snackbar.make(findViewById(R.id.anchor), add_water_value + " " + getResources().getString(R.string.snackbar_water_supply) + " !", Snackbar.LENGTH_SHORT);
-                    ColoredSnackbar.info(snackbar).show();
-                    int flag = db.updateCurrentValue(daily_water, user_id,now);
-                    //editor = prefs.edit();
-                    editor.putInt("daily_water", daily_water);
-                    editor.apply();
-                    Log.d("MyApp", "Current Value is updated ?: " + flag +"\nValue : "+prefs.getInt("daily_water",10));
-                    arcProgressFunctionWater();
-                    if (db.checkDateTableIDEmpty(user_id)) {
-                        drawGrahps(db.getDateCount(user_id));
-                    }
-                } else if (add_water_value == 0 || update == 0) {
-                    Snackbar snackbar = Snackbar.make(findViewById(R.id.anchor), getResources().getString(R.string.snackbar_water_add_fail)+" !", Snackbar.LENGTH_LONG);
-                    ColoredSnackbar.info(snackbar).show();
-                } else if (add_water_value < 0 && update != 0) {
-                    Snackbar snackbar = Snackbar.make(findViewById(R.id.anchor), 1 + " " + getResources().getString(R.string.snackbar_water_supply_delete) + " !", Snackbar.LENGTH_SHORT);
-                    ColoredSnackbar.info(snackbar).show();
-                    int flag = db.updateCurrentValue(daily_water, user_id,now);
-                    editor.putInt("daily_water", daily_water);
-                    editor.apply();
-                    Log.d("MyApp", "Current Value is updated ?: " + flag +"\nValue : "+daily_water+"\nDate : "+now);
-                    arcProgressFunctionWater();
-                    if (db.checkDateTableIDEmpty(user_id)) {
-                        drawGrahps(db.getDateCount(user_id));
+                        add_water_value = 12;
+                        secretTextView2.setText("  " + add_water_value + " " + getResources().getString(R.string.cup));
                     }
                 }
-                fadeOut();
-                floatingActionsMenu.collapse();
-                add_water_value = 1;
-                //Here's a runnable/handler combo
-                Runnable mMyRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        secretTextView2.setText(add_water_value + "  "+getResources().getString(R.string.cup));
+            });
+            fab2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (add_water_value > -1) {
+                        if (daily_water > 0) {
+                            add_water_value--;
+                            secretTextView2.setText("  " + add_water_value + " " + getResources().getString(R.string.cup));
+                        } else {
+                            add_water_value = 1;
+                            secretTextView2.setText("  " + add_water_value + " " + getResources().getString(R.string.cup));
+
+                        }
+                    } else {
+                        add_water_value = -1;
+                        secretTextView2.setText("  " + add_water_value + " " + getResources().getString(R.string.cup));
                     }
-                };
+                }
+            });
 
-                //Water Sound Play
-                mySound.play(soundID,1,1,1,0,1);
+            fab_complete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    daily_water += add_water_value;
+                    Log.d("MyApp", "Add_Water_Value : " + add_water_value);
+                    Log.d("MyApp", "Daily_Water : " + daily_water);
 
-                Handler myHandler = new Handler();
-                myHandler.postDelayed(mMyRunnable, 900); //Message will be delivered in 0.9 second.
+                    total_water_textView.setText(daily_water + " / " + daily_goal);
+                    change_water_perc = (daily_water / (daily_goal * 1.0)) * 100;
 
-                //Toast.makeText(getBaseContext(), add_water_value + " water supply is added !", Toast.LENGTH_SHORT).show();
-            }
-        });
+                    int update = db.updateDailyWaterValue(username.toLowerCase(), daily_water);
+                    Log.d("MyApp", "Water Value Updated : " + update);
+                    if (add_water_value > 0 && update != 0) {
+                        Snackbar snackbar = Snackbar.make(findViewById(R.id.anchor), add_water_value + " " + getResources().getString(R.string.snackbar_water_supply) + " !", Snackbar.LENGTH_SHORT);
+                        ColoredSnackbar.info(snackbar).show();
+                        int flag = db.updateCurrentValue(daily_water, user_id, now);
+                        //editor = prefs.edit();
+                        editor.putInt("daily_water", daily_water);
+                        editor.apply();
+                        Log.d("MyApp", "Current Value is updated ?: " + flag + "\nValue : " + prefs.getInt("daily_water", 10));
+                        arcProgressFunctionWater();
+                        if (db.checkDateTableIDEmpty(user_id)) {
+                            drawGrahps(db.getDateCount(user_id));
+                        }
+                    } else if (add_water_value == 0 || update == 0) {
+                        Snackbar snackbar = Snackbar.make(findViewById(R.id.anchor), getResources().getString(R.string.snackbar_water_add_fail) + " !", Snackbar.LENGTH_LONG);
+                        ColoredSnackbar.info(snackbar).show();
+                    } else if (add_water_value < 0 && update != 0) {
+                        Snackbar snackbar = Snackbar.make(findViewById(R.id.anchor), 1 + " " + getResources().getString(R.string.snackbar_water_supply_delete) + " !", Snackbar.LENGTH_SHORT);
+                        ColoredSnackbar.info(snackbar).show();
+                        int flag = db.updateCurrentValue(daily_water, user_id, now);
+                        editor.putInt("daily_water", daily_water);
+                        editor.apply();
+                        Log.d("MyApp", "Current Value is updated ?: " + flag + "\nValue : " + daily_water + "\nDate : " + now);
+                        arcProgressFunctionWater();
+                        if (db.checkDateTableIDEmpty(user_id)) {
+                            drawGrahps(db.getDateCount(user_id));
+                        }
+                    }
+                    fadeOut();
+                    floatingActionsMenu.collapse();
+                    add_water_value = 1;
+                    //Here's a runnable/handler combo
+                    Runnable mMyRunnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            secretTextView2.setText(add_water_value + "  " + getResources().getString(R.string.cup));
+                        }
+                    };
+
+                    //Water Sound Play
+                    mySound.play(soundID, 1, 1, 1, 0, 1);
+
+                    Handler myHandler = new Handler();
+                    myHandler.postDelayed(mMyRunnable, 900); //Message will be delivered in 0.9 second.
+
+                    //Toast.makeText(getBaseContext(), add_water_value + " water supply is added !", Toast.LENGTH_SHORT).show();
+                }
+            });
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -492,7 +472,7 @@ public class MainActivity extends AppCompatActivity {
                 });
                 customDialog.show();
             }
-        });
+            });
     }
 
     //Second Progress Function for Daily Water
@@ -589,19 +569,4 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-        public void alarmMethod(AlarmManager alarmmanager){
-        Intent myIntent1 = new Intent(this, NotifyService.class);
-        alarmmanager = (AlarmManager)getSystemService(ALARM_SERVICE);
-        pendingIntentNotification = PendingIntent.getService(this,0,myIntent1,0);
-
-        Calendar cal=Calendar.getInstance();
-
-        cal.set(Calendar.MILLISECOND, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.HOUR_OF_DAY, 16);
-        alarmmanager.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), interval, pendingIntentNotification);
-
-        Toast.makeText(this, "Start Alarm", Toast.LENGTH_LONG).show();
-    }
 }

@@ -27,6 +27,7 @@ import com.water.waterreminder.anim.ColoredSnackbar;
 import com.water.waterreminder.pojos.Statistic;
 
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import general.BitMap;
@@ -81,16 +82,15 @@ public class ProfileActivity extends AppCompatActivity {
 
         fillStatistics();
         recyclerView.setAdapter(new MyRecyclerAdapter(this, list));
-
     }
 
-
+/*
     public void getAvg(){
         sum = db.getSumWaterValue(user_id);
         int count = db.getDateCount(user_id);
 
         avg = sum / count;
-    }
+    }*/
 
     public String firstLetterCapital(String input){
         return input.substring(0, 1).toUpperCase() + input.substring(1);
@@ -181,8 +181,6 @@ public class ProfileActivity extends AppCompatActivity {
         alertDialog.show();
     }
 
-
-
     @Override
     public void onBackPressed() {
        startActivity(new Intent(this,MainActivity.class));
@@ -193,11 +191,11 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     public void fillStatistics(){
-            float avg = prefs.getFloat("average",0);
-            list.add(new Statistic(R.drawable.ic_info,"Average",avg+" cups"));
-            list.add(new Statistic(R.drawable.ic_settings_special,"Best Streak","14 days"));
-            list.add(new Statistic(R.drawable.ic_person,"Current Streak","4 days"));
-            list.add(new Statistic(R.drawable.ic_password,"Achivement","114 victory !"));
+       float avg = prefs.getFloat("average",0);
+       list.add(new Statistic(R.drawable.ic_info,"Average",new DecimalFormat("##.##").format(avg)+" cups"));
+       list.add(new Statistic(R.drawable.ic_settings_special,"Best Streak","14 days"));
+       list.add(new Statistic(R.drawable.ic_person,"Current Streak","4 days"));
+       list.add(new Statistic(R.drawable.ic_password,"Achivement","114 victory !"));
     }
 
     //MyRecyclerAdapter Inner Class

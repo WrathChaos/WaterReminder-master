@@ -1,7 +1,5 @@
 package com.water.waterreminder;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -19,14 +17,11 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.water.waterreminder.anim.AnimationUtils;
-import com.water.waterreminder.notification.NotifyService;
 import com.water.waterreminder.pojos.Devs;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 
 import general.BitMap;
 
@@ -52,13 +47,13 @@ public class SettingsActivity extends AppCompatActivity {
         switch1 = (Switch) findViewById(R.id.switch1);
 
 
-        fillRoutes();
+        fillDevs();
         recyclerView.setAdapter(new MyRecyclerAdapter(this, list));
 
     }
 
 
-    public void fillRoutes() {
+    public void fillDevs() {
         list.add(new Devs(R.drawable.team0,
                 getResources().getString(R.string.team_0),
                 getResources().getString(R.string.team_0_job),
@@ -70,17 +65,6 @@ public class SettingsActivity extends AppCompatActivity {
                 getResources().getString(R.string.team_0_twitter),
                 getResources().getString(R.string.team_0_linkedin),
                 getResources().getString(R.string.team_0_github)));
-        list.add(new Devs(R.drawable.team1,
-                getResources().getString(R.string.team_1),
-                getResources().getString(R.string.team_1_job),
-                R.drawable.ic_facebook_black,
-                R.drawable.ic_twitter_black,
-                R.drawable.ic_linkedin_black,
-                R.drawable.ic_github_black,
-                getResources().getString(R.string.team_1_facebook),
-                getResources().getString(R.string.team_1_twitter),
-                getResources().getString(R.string.team_1_linkedin),
-                getResources().getString(R.string.team_1_github)));
     }
 
     //MyRecyclerAdapter Inner Class
@@ -213,21 +197,6 @@ public class SettingsActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void alarmMethod(AlarmManager alarmmanager) {
-        Intent myIntent1 = new Intent(this, NotifyService.class);
-        alarmmanager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        MainActivity.pendingIntentNotification = PendingIntent.getService(this, 0, myIntent1, 0);
-
-        Calendar cal = Calendar.getInstance();
-
-        cal.set(Calendar.MILLISECOND, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.HOUR_OF_DAY, 16);
-        alarmmanager.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), MainActivity.interval, MainActivity.pendingIntentNotification);
-
-        Toast.makeText(this, "Start Alarm", Toast.LENGTH_LONG).show();
-    }
 
 
 }

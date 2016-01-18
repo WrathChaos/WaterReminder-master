@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.charts.LineChart;
@@ -38,6 +39,10 @@ public class GraphActivity extends AppCompatActivity {
 
     HorizontalBarChart horizontalBarChart;
     LineChart chart;
+    TextView total_day;
+    TextView total_water;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,22 +53,41 @@ public class GraphActivity extends AppCompatActivity {
         editor = prefs.edit();
 
         water_goal = prefs.getInt("daily_goal_water", 0);
-        username = prefs.getString("username","Username cannot be found in GraphActivity");
+        username = prefs.getString("username", "Username cannot be found in GraphActivity");
 
         horizontalBarChart = (HorizontalBarChart) findViewById(R.id.hori_barchart);
         chart = (LineChart) findViewById(R.id.yearly_chart);
+        total_day = (TextView) findViewById(R.id.total_day);
+        total_water = (TextView) findViewById(R.id.total_water);
 
         Cursor cursor3 = db.getUserID(username);
         user_id = cursor3.getInt(0);
 
+        //Calculating Average && put it into SharedPreference
+        calcAvg();
+        setTotalValues();
+        drawGrahps();
+    }
+
+
+
+
+    public void setTotalValues(){
+        int totalDay = db.getDateCount(user_id);
+        total_day.setText(totalDay+" Days |  ");
+        double totalWater = db.getSumWaterValue(user_id);
+        total_water.setText((int)totalWater+" Cups");
+    }
+
+    public void calcAvg(){
         sum = db.getSumWaterValue(user_id);
         int count = db.getDateCount(user_id);
 
         avg = sum / count;
+
         editor.putFloat("average",(float)avg);
         editor.apply(); // This line is IMPORTANT
 
-        drawGrahps();
     }
 
     public void drawGrahps(){

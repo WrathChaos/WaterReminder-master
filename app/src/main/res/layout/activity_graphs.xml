@@ -23,4 +23,39 @@
         android:layout_below="@+id/hori_barchart"
         android:layout_alignParentStart="true" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/yearly_chart"
+        >
+    <ImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:id="@+id/logo"
+        android:background="@drawable/carboy" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="72 Days | "
+        android:textColor="@color/divider"
+        android:textSize="14sp"
+        android:id="@+id/total_day"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="866 Cups"
+        android:textStyle="bold"
+        android:textColor="@color/divider"
+        android:textSize="20sp"
+        android:id="@+id/total_water" />
+
+    </LinearLayout>
+
 </RelativeLayout>
