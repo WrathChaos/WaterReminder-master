@@ -1,0 +1,147 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context="${packageName}.${activityClass}"
+    android:orientation="vertical"
+    android:background="@drawable/dialog_box_bg"
+    android:paddingBottom="16dp"
+    android:paddingTop="16dp"
+    >
+
+    <ImageView
+        android:id="@+id/image_view"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/info"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:id="@+id/hint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hint : "
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="20sp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="20dp"
+        android:textStyle="bold"
+        android:layout_alignBottom="@+id/image_view"
+        android:layout_toEndOf="@+id/image_view"
+        android:layout_marginStart="22dp" />
+
+
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/close_button"
+        android:background="@android:drawable/ic_menu_close_clear_cancel"
+        android:layout_alignTop="@+id/image_view"
+        android:layout_alignEnd="@+id/view" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/myGrey"
+        android:layout_below="@id/hint"
+        android:layout_marginTop="20dp"
+        android:id="@+id/view" />
+
+
+    <LinearLayout
+        android:id="@+id/first"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@+id/view"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="28dp">
+
+
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/cup"
+        android:id="@+id/cup_hint_img"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Everyday Minimum : 8 Cups"
+        android:id="@+id/cup_hint"
+        android:textStyle="bold"
+        android:layout_marginTop="12dp"
+        android:layout_below="@+id/view"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="30dp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/second"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@+id/first"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="10dp">
+
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/bottle"
+            android:id="@+id/bottle_cup_img"
+            android:layout_alignParentStart="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="1 Bottle = 3 Cups"
+            android:id="@+id/bottle_cup"
+            android:textStyle="bold"
+            android:layout_marginTop="12dp"
+            android:layout_below="@+id/view"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="30dp" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/third"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@+id/second"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="10dp">
+
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/carboy"
+            android:id="@+id/carboy_img"
+            android:layout_alignParentStart="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="1 Carboy = 80 Cups"
+            android:id="@+id/carboy"
+            android:textStyle="bold"
+            android:layout_marginTop="12dp"
+            android:layout_below="@+id/view"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="30dp" />
+
+    </LinearLayout>
+
+</RelativeLayout>

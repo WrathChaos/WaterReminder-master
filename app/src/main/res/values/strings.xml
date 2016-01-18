@@ -115,6 +115,7 @@
 
     <!-- Graphs -->
     <string name="tographs">GRAPHS</string>
+    <string name="title_activity_deneme">deneme</string>
 
 
 </resources>

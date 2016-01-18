@@ -2,11 +2,13 @@ package com.water.waterreminder;
 
 import android.annotation.TargetApi;
 import android.app.AlarmManager;
+import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Build;
@@ -67,6 +69,8 @@ public class MainActivity extends AppCompatActivity {
     FloatingActionButton fab2;
     FloatingActionButton fab_complete;
 
+    android.support.design.widget.FloatingActionButton fab;
+
     ImageView details;
     SecretTextView secretTextView;
     SecretTextView secretTextView2;
@@ -116,6 +120,9 @@ public class MainActivity extends AppCompatActivity {
         fab2 = (FloatingActionButton) findViewById(R.id.fab2);
         fab_complete = (FloatingActionButton) findViewById(R.id.fab_complete);
         total_water_textView = (TextView) findViewById(R.id.daily_total_water);
+        fab = (android.support.design.widget.FloatingActionButton) findViewById(R.id.info_button);
+
+
 
         //Water Sound
         mySound = new SoundPool(1, AudioManager.STREAM_MUSIC,0);
@@ -228,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
                 float a_side = (float)values.getInt(0);
                 int b_side = values.getInt(1);
                 //b_side--;
-                Log.d("MyApp", "Count>=7: " + values.getInt(0) + " ----- : " + b_side);
+                //Log.d("MyApp", "Count>=7: " + values.getInt(0) + " ----- : " + b_side);
                 if(list[b_side]<=0)
                     list[b_side] = (int)a_side;
 
@@ -236,7 +243,7 @@ public class MainActivity extends AppCompatActivity {
             }
             for(int j=0; j<=count; j++) {
                 entries.add(new BarEntry(list[j], j));
-                Log.d("MyApp", "list : "+list[j]);
+                //Log.d("MyApp", "list : "+list[j]);
             }
 
         } else if(values != null && count <7){
@@ -245,10 +252,10 @@ public class MainActivity extends AppCompatActivity {
                 float a_side = (float)values.getInt(0);
                 int b_side = values.getInt(1);
                 //b_side--;
-                Log.d("MyApp", "Count>=7: " + values.getInt(0) + " ----- : " + b_side);
+                //Log.d("MyApp", "Count>=7: " + values.getInt(0) + " ----- : " + b_side);
                 if(list[b_side]<=0)
                     list[b_side] = (int) a_side;
-                Log.d("MyApp", "A_SIDE : "+a_side+"\nB_SIDE : "+b_side+"\nlist : "+list[6]);
+                //Log.d("MyApp", "A_SIDE : "+a_side+"\nB_SIDE : "+b_side+"\nlist : "+list[6]);
                 values.moveToNext();
             }
             for(int j=0; j<=6; j++) {
@@ -257,7 +264,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        BarDataSet dataset = new BarDataSet(entries, "Number of Glasses Drunk in a Week");
+        BarDataSet dataset = new BarDataSet(entries, "Weekly");
         dataset.setValueTextSize(10);
         dataset.setBarSpacePercent(25f);
         dataset.setValueFormatter(new MyValueFormatter());
@@ -301,7 +308,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void tographs(View view){
+    public void toGraphs(View view){
         Intent i = new Intent(this, GraphActivity.class);
         startActivity(i);
     }
@@ -331,10 +338,12 @@ public class MainActivity extends AppCompatActivity {
         secretTextView2.show();   // fadeIn
         secretTextView2.setDuration(1000);     // set fade duration to 1 seconds
 
+        fab.setVisibility(View.VISIBLE);
         AlphaAnimation fadeInAnimation = new AlphaAnimation(0, 1); // start alpha, end alpha
         fadeInAnimation.setDuration(1000);
         fadeInAnimation.setFillAfter(true); // make the transformation persist
         fab_complete.setAnimation(fadeInAnimation);
+        fab.setAnimation(fadeInAnimation);
     }
 
     public void fadeOut(){
@@ -343,15 +352,20 @@ public class MainActivity extends AppCompatActivity {
         secretTextView2.hide();   // fadeOut
         secretTextView2.setDuration(1000);     // set fade duration to 1 seconds
         fab_complete.setVisibility(View.INVISIBLE);
+        fab.setVisibility(View.INVISIBLE);
+
 
         AlphaAnimation fadeOutAnimation = new AlphaAnimation(1, 0); // start alpha, end alpha
         fadeOutAnimation.setDuration(1000); // time for animation in milliseconds
         fadeOutAnimation.setFillAfter(true); // make the transformation persist
         fab_complete.setAnimation(fadeOutAnimation);
+        fab.setAnimation(fadeOutAnimation);
+
     }
 
     //Floating ActionButtonMenu Click Function
     public void actionButtonClick() {
+
         floatingActionsMenu.setOnFloatingActionsMenuUpdateListener(new FloatingActionsMenu.OnFloatingActionsMenuUpdateListener() {
             @Override
             public void onMenuExpanded() {
@@ -453,6 +467,30 @@ public class MainActivity extends AppCompatActivity {
                 myHandler.postDelayed(mMyRunnable, 900); //Message will be delivered in 0.9 second.
 
                 //Toast.makeText(getBaseContext(), add_water_value + " water supply is added !", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+                final Dialog customDialog;
+
+                customDialog = new Dialog(MainActivity.this);
+                customDialog.setContentView(R.layout.custom_dialog_info);
+
+                ImageView close_button = (ImageView) customDialog.findViewById(R.id.close_button);
+                //customDialog.setTitle("Phone Numbers");
+                customDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+                close_button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        customDialog.dismiss();
+                    }
+                });
+                customDialog.show();
             }
         });
     }

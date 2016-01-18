@@ -25,7 +25,7 @@
         android:background="@drawable/custom_background"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_status_bar"
+        android:paddingTop="10dp"
         >
 
     <RelativeLayout
@@ -136,6 +136,21 @@
                 android:layout_alignTop="@+id/secretText"
                 android:layout_alignParentEnd="true" />
 
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/info_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_alignTop="@+id/fab_complete"
+                android:layout_alignEnd="@+id/secretText2"
+                android:layout_marginTop="5dp"
+                android:visibility="invisible"
+                app:backgroundTint="@color/myWhite"
+                app:fabSize="mini"
+                custom:rippleColor="@color/mySkyBlueLight"
+                android:src="@drawable/info" />
+
             <com.getbase.floatingactionbutton.FloatingActionButton
                 android:animateLayoutChanges="true"
                 android:id="@+id/fab_complete"
@@ -161,19 +176,10 @@
                 android:layout_height="wrap_content"
                 android:text="@string/tographs"
                 android:id="@+id/btngrph"
-                android:onClick="tographs"
+                android:onClick="toGraphs"
                 android:layout_above="@+id/chart"
                 android:layout_alignParentEnd="true" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/imageView2"
-                android:layout_alignBottom="@+id/btngrph"
-                android:layout_alignEnd="@+id/fab_complete" />
         </RelativeLayout>
-
-
     </LinearLayout>
 
 
@@ -187,7 +193,7 @@
         fab:fab_addButtonPlusIconColor="@color/accent"
         fab:fab_addButtonStrokeVisible="false"
         fab:fab_expandDirection="down"
-        android:layout_marginTop="295dp"
+        android:layout_marginTop="265dp"
         >
 
     <com.getbase.floatingactionbutton.FloatingActionButton
