@@ -100,10 +100,21 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view_statistic"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="200dp"
         android:layout_below="@+id/current_daily_goal"
         android:layout_alignParentEnd="true"
         android:overScrollMode="never"
         android:layout_marginTop="40dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/achievement_error"
+        android:layout_below="@+id/recycler_view_statistic"
+        android:gravity="right"
+        android:textSize="12sp"
+        android:textColor="@color/divider"
+
+        />
 
 </RelativeLayout>

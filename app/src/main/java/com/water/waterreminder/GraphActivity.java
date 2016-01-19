@@ -69,9 +69,6 @@ public class GraphActivity extends AppCompatActivity {
         drawGrahps();
     }
 
-
-
-
     public void setTotalValues(){
         int totalDay = db.getDateCount(user_id);
         total_day.setText(totalDay+" Days |  ");

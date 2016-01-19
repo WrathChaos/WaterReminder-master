@@ -47,8 +47,6 @@ public class ProfileActivity extends AppCompatActivity {
     String username;
     String password;
     int shared_water_goal;
-    double sum;
-    double avg;
     //User ID
     int user_id;
     @Override
@@ -118,10 +116,10 @@ public class ProfileActivity extends AppCompatActivity {
 
                 if (update > 0) {
                     profileName.setText(firstLetterCapital(new_un));
-                    Snackbar snackbar = Snackbar.make(findViewById(R.id.relativeLayout), "Your username is changed successfully", Snackbar.LENGTH_LONG);
+                    Snackbar snackbar = Snackbar.make(findViewById(R.id.relativeLayout), getString(R.string.name_changed_success), Snackbar.LENGTH_LONG);
                     snackbar.show();
                 } else {
-                    Snackbar snackbar = Snackbar.make(findViewById(R.id.relativeLayout), "Please enter a valid username", Snackbar.LENGTH_LONG);
+                    Snackbar snackbar = Snackbar.make(findViewById(R.id.relativeLayout), getString(R.string.name_changed_failed), Snackbar.LENGTH_LONG);
                     snackbar.show();
                 }
             }
@@ -162,10 +160,10 @@ public class ProfileActivity extends AppCompatActivity {
                     SharedPreferences.Editor editor = prefs.edit();
                     editor.putInt("daily_goal_water",new_goal);
                     editor.apply();
-                    Snackbar snackbar = Snackbar.make(findViewById(R.id.mainRelativeLayout), "Your water goal is changed successfully", Snackbar.LENGTH_LONG);
+                    Snackbar snackbar = Snackbar.make(findViewById(R.id.mainRelativeLayout), getString(R.string.goal_changed_success), Snackbar.LENGTH_LONG);
                     ColoredSnackbar.info(snackbar).show();
                 } else {
-                    Snackbar snackbar = Snackbar.make(findViewById(R.id.mainRelativeLayout), "Please enter a valid water goal \n Water goal cannot be less than 1 \n cannot be more than 35", Snackbar.LENGTH_LONG);
+                    Snackbar snackbar = Snackbar.make(findViewById(R.id.mainRelativeLayout), getString(R.string.goal_changed_failed), Snackbar.LENGTH_LONG);
                     ColoredSnackbar.info(snackbar).show();
                 }
             }
@@ -192,10 +190,12 @@ public class ProfileActivity extends AppCompatActivity {
 
     public void fillStatistics(){
        float avg = prefs.getFloat("average",0);
-       list.add(new Statistic(R.drawable.ic_info,"Average",new DecimalFormat("##.##").format(avg)+" cups"));
-       list.add(new Statistic(R.drawable.ic_settings_special,"Best Streak","14 days"));
-       list.add(new Statistic(R.drawable.ic_person,"Current Streak","4 days"));
-       list.add(new Statistic(R.drawable.ic_password,"Achivement","114 victory !"));
+        double sum = db.getSumWaterValue(user_id);
+        int count = db.getDateCount(user_id);
+       list.add(new Statistic(R.drawable.ic_info,getString(R.string.average),new DecimalFormat("##.##").format(avg)+" cups"));
+       list.add(new Statistic(R.drawable.ic_settings_special,getString(R.string.total_days),count+" "+ getString(R.string.days)));
+       list.add(new Statistic(R.drawable.ic_person,getString(R.string.total_water_cons),(int)sum+" "+getString(R.string.cup)));
+       list.add(new Statistic(R.drawable.ic_password,"Achievement","114 victory !"));
     }
 
     //MyRecyclerAdapter Inner Class

@@ -98,9 +98,9 @@
     <string name="info">Bilgi</string>
     <string name="got_info">Anladım !</string>
     <string name="signUp">Hayat sudur! Üye ol ve bu keyfi sende yaşa</string>
-    <string name="title_activity_main">RegisterMainActivity</string>
     <string name="male">Bay</string>
     <string name="female">Bayan</string>
+    <string name="title_activity_main">RegisterMainActivity</string>
     <string name="title_activity_register_third">RegisterThirdActivity</string>
 
 
@@ -110,9 +110,27 @@
     <string name="current_daily_goal">Günlük su girdisi </string>
     <string name="change_daily_goal">Günlük su girdisini değiştirin</string>
     <string name="new_value">Yeni bir değer girin</string>
+    <string name="goal_changed_success">Belirlediğiniz hedef başarıyla değişmiştir</string>
+    <string name="goal_changed_failed"> Hedef 1 den küçük
+                                        35 den büyük olamaz</string>
+    <string name="name_changed_success">Rumuzunuz başarıyla değişmiştir</string>
+    <string name="name_changed_failed">Lütfen geçerli bir rumuz giriniz</string>
+    <string name="average">Ortalama Su Değeriniz</string>
+    <string name="days">gün</string>
+    <string name="total_days">Toplam Gün</string>
+    <string name="total_water_cons">Toplam Tükettiğiniz Su Miktarı</string>
+    <string name="achievement_error">* Başarılar kısmı henüz işlevsel değildir.</string>
+
+
+
 
     <!-- Graphs -->
     <string name="tographs">Grafikler</string>
 
-
+    <!-- Custom DialogBox Graph Hint -->
+    <string name="hint">İpucu</string>
+    <string name="hint1">Hergün En Az : 8 Bardak</string>
+    <string name="hint2">1 Şişe Su = 3 Bardak</string>
+    <string name="hint3">1 Damacana = 80 Bardak</string>
+    <string name="note1">* Yaklaşık değerlerdir</string>
 </resources>

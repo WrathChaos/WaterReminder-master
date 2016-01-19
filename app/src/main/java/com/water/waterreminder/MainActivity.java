@@ -1,7 +1,9 @@
 package com.water.waterreminder;
 
 import android.annotation.TargetApi;
+import android.app.AlarmManager;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -36,6 +38,8 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.water.waterreminder.anim.ColoredSnackbar;
+import com.water.waterreminder.notification.NotificationEventReceiver;
+import com.water.waterreminder.notification.NotificationIntentService;
 import com.water.waterreminder.secretText.SecretTextView;
 
 import java.text.SimpleDateFormat;
@@ -175,7 +179,17 @@ public class MainActivity extends AppCompatActivity {
                 db.insertDate(user_id, getWater(), now, getTheCurrentDay());
               }
             }
+        //Notification
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        String test = sdf.format(cal.getTime());
+        String[] time = test.split(":");
+        Log.e("MyApp", "Time0 : " + test + "\nExact Hour0 : " + time[0]);
 
+        if(Integer.parseInt(time[0])<22 && Integer.parseInt(time[0])>8){
+            Log.e("MyApp", "Time : " + test + "\nExact Hour : " + time[0]);
+            NotificationEventReceiver.setupAlarm(getApplicationContext());
+        }
 
         //Functions
         setWaterValue();
@@ -185,7 +199,6 @@ public class MainActivity extends AppCompatActivity {
             drawGrahps(db.getDateCount(user_id));
         }
     }
-
 
     public int getWater(){
         Cursor getWater = db.getDailyWaterValue(username, password);
@@ -240,9 +253,9 @@ public class MainActivity extends AppCompatActivity {
                 //Log.d("MyApp", "A_SIDE : "+a_side+"\nB_SIDE : "+b_side+"\nlist : "+list[6]);
                 values.moveToNext();
             }
-            for(int j=0; j<=6; j++) {
+            for(int j = 0; j <= 6; j++) {
                 entries.add(new BarEntry(list[j], j));
-                Log.d("MyApp", "list : " + list[j]);
+                //Log.d("MyApp", "list : " + list[j]);
             }
         }
 

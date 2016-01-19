@@ -8,11 +8,9 @@
 
     <string name="textViewFacebook">OR</string>
 
-
     <string name="facebook_app_id">1465490360419578</string>
 
     <string name="username">Username</string>
-
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
@@ -100,9 +98,9 @@
     <string name="info">Information</string>
     <string name="got_info">Got It !</string>
     <string name="signUp">Sign Up to control your water consumption !</string>
-    <string name="title_activity_main">RegisterMainActivity</string>
     <string name="male">Male</string>
     <string name="female">Female</string>
+    <string name="title_activity_main">RegisterMainActivity</string>
     <string name="title_activity_register_third">RegisterThirdActivity</string>
 
 
@@ -113,9 +111,27 @@
     <string name="change_daily_goal">Change Your Current Daily Goal</string>
     <string name="new_value">Enter your new value</string>
 
+    <string name="goal_changed_success">Your water goal is changed successfully</string>
+    <string name="goal_changed_failed"> Water goal cannot be less than 1
+                                        and more than 35</string>
+    <string name="name_changed_success">Your username is changed successfully</string>
+    <string name="name_changed_failed">Please enter a valid username</string>
+    <string name="average">Average</string>
+    <string name="days">days</string>
+    <string name="total_days">Total Days</string>
+    <string name="total_water_cons">Total Water Consumption</string>
+    <string name="achievement_error">* Achievement part is not functional yet.</string>
+
+
     <!-- Graphs -->
     <string name="tographs">GRAPHS</string>
     <string name="title_activity_deneme">deneme</string>
 
+    <!-- Custom DialogBox Graph Hint -->
+    <string name="hint">Hint</string>
+    <string name="hint1">Everyday Minimum : 8 Cups</string>
+    <string name="hint2">1 Bottle = 3 Cups</string>
+    <string name="hint3">1 Carboy = 80 Cups</string>
+    <string name="note1">* These are approximate values</string>
 
 </resources>
