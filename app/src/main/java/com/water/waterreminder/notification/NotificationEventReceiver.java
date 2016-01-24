@@ -22,7 +22,7 @@ import java.util.Date;
         PendingIntent alarmIntent = getStartPendingIntent(context);
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
                 getTriggerAt(new Date()),
-                AlarmManager.INTERVAL_FIFTEEN_MINUTES/15,
+                AlarmManager.INTERVAL_FIFTEEN_MINUTES*4,
                 alarmIntent);
         //AlarmManager.INTERVAL_HOUR
     }

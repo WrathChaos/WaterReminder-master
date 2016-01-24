@@ -40,6 +40,7 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.water.waterreminder.anim.ColoredSnackbar;
 import com.water.waterreminder.notification.NotificationEventReceiver;
 import com.water.waterreminder.notification.NotificationIntentService;
+import com.water.waterreminder.pojos.User;
 import com.water.waterreminder.secretText.SecretTextView;
 
 import java.text.SimpleDateFormat;
@@ -87,9 +88,6 @@ public class MainActivity extends AppCompatActivity {
     Button btngraphs;
     BarChart chart;
 
-    //Notification
-    public static long interval = 1000*60*60*8;
-
     //Water Sound
     SoundPool mySound;
     int soundID;
@@ -120,8 +118,6 @@ public class MainActivity extends AppCompatActivity {
         total_water_textView = (TextView) findViewById(R.id.daily_total_water);
         fab = (android.support.design.widget.FloatingActionButton) findViewById(R.id.info_button);
 
-
-
         //Water Sound
         mySound = new SoundPool(1, AudioManager.STREAM_MUSIC,0);
         soundID = mySound.load(this,R.raw.watersound,1);
@@ -149,15 +145,47 @@ public class MainActivity extends AppCompatActivity {
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
             now = df.format(new Date());
 
+
             String exact_day = now;
             Log.d("MyApp", "Exact_Day : " + exact_day);
             Log.d("MyApp", "username : "+username);
 
-            Cursor cursor3 = db.getUserID(username);
+
+        // User_ID from Server
+        user_id = prefs.getInt("user_id",0);
+/*
+        Cursor cursor3 = db.getUserID(username);
             user_id = cursor3.getInt(0);
-
-
+*/
         if(!db.checkDateTableIDEmpty(user_id)) {
+            int id = prefs.getInt("user_id",0);
+            String e_mail = prefs.getString("user_email", "No E-Mail found, we might missed it, Sorry :(");
+            String gender = prefs.getString("gender", "No Gender found, we might have missed it, Sorry :(");
+            int age = prefs.getInt("age", 0);
+            String country = prefs.getString("country","No Country found, we might have missed it, Sorry :(");
+            daily_goal = prefs.getInt("daily_goal_water", 0);
+            int water_daily_value = 0;
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putInt("daily_water", water_daily_value);
+            editor.apply();
+
+            DBAdapter db = new DBAdapter(getApplicationContext());
+
+            // Opening the database for reading data
+            try {
+                db.open();
+                Log.d("MyApp", "DB Opened");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            /**
+             * CRUD Operations
+             * */
+            // Inserting Contacts
+            Log.d("MyApp", "Inserting ..");
+            db.addUser(new User(id,username, password, e_mail, gender, age, country, daily_goal));
+
             Log.d("MyApp", "date table is empty ! User ID : " + user_id + "\nValue : " + getWater() + "\nDate : " + now);
             db.insertDate(user_id, getWater(), now, getTheCurrentDay());
             db.updateDay(now, username);
@@ -173,11 +201,11 @@ public class MainActivity extends AppCompatActivity {
                     editor.putInt("daily_water", 0);
                     editor.apply();
                     db.updateDay(exact_day, username);
-                }
+               }
             if (!db.checkDateValue(user_id, now)) {
                 Log.d("MyApp", "Table is exist! User ID : " + user_id + "\nValue : " + getWater() + "\nDate : " + now);
                 db.insertDate(user_id, getWater(), now, getTheCurrentDay());
-              }
+               }
             }
         //Notification
         Calendar cal = Calendar.getInstance();
@@ -198,6 +226,8 @@ public class MainActivity extends AppCompatActivity {
         if (db.checkDateTableIDEmpty(user_id)) {
             drawGrahps(db.getDateCount(user_id));
         }
+
+
     }
 
     public int getWater(){
@@ -323,7 +353,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d("MyApp", "Water is changed by registeration : 0"+"Flag : "+flag);
         }*/
 
-        Log.d("MyApp", "Daily Water From Shared : " + prefs.getInt("daily_water", 0));
+        Log.d("MyApp", "Daily Goal From Shared : " + prefs.getInt("daily_goal_water", 0));
         total_water_textView.setText(daily_water + " / " + daily_goal);
     }
 
@@ -466,7 +496,6 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
 
                 final Dialog customDialog;
 

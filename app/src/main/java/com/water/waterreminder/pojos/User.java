@@ -40,7 +40,9 @@ public class User {
     }
 
     //Constructor
-    public User(int id, String username, String password, String email, String gender, int age, String country, int daily_goal, int daily_water, int weekly_water, int montly_water, int yearly_water) {
+
+
+    public User(int id, String username, String password, String email, String gender, int age, String country, int daily_goal) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -49,10 +51,6 @@ public class User {
         this.age = age;
         this.country = country;
         this.daily_goal = daily_goal;
-        this.daily_water = daily_water;
-        this.weekly_water = weekly_water;
-        this.montly_water = montly_water;
-        this.yearly_water = yearly_water;
     }
 
     //Getters and Setters

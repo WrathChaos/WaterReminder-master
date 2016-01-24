@@ -1,6 +1,7 @@
 package com.water.waterreminder;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -27,7 +28,19 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.water.waterreminder.anim.ColoredSnackbar;
+import com.water.waterreminder.background_tasks.BackgroundTask;
+import com.water.waterreminder.background_tasks.MyTaskParams;
 import com.water.waterreminder.register.part.RegisterMainActivity;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 
 import general.TransparentStatusBar;
 
@@ -95,32 +108,61 @@ public class LoginActivity extends AppCompatActivity implements TransparentStatu
 
 
     public void classicLogin(View view) {
-        Intent intent = new Intent(this,MainActivity.class);
-        mySound.play(soundID,1,1,1,0,1);
+        mySound.play(soundID, 1, 1, 1, 0, 1);
 
         user_login = mInputUserLogin.getText().toString().toLowerCase();
         password = mInputPassword.getText().toString();
 
+        String method = "Login";
+
+        BackgroundTask backgroundTask = new BackgroundTask(getApplicationContext());
+        MyTaskParams params = new MyTaskParams(method,user_login,password);
+        try {
+            String checkValue = backgroundTask.execute(params).get();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        SharedPreferences prefs = getSharedPreferences("user_info", MODE_PRIVATE);
+        int daily_goal = prefs.getInt("daily_goal_water", -2);
+
+        Log.d("MyApp", "Water Goal in Login2 : " + daily_goal);
+        if(daily_goal == -2){
+            //Preventing & Closing Pop-Keyboard Immediately
+            InputMethodManager inputManager = (InputMethodManager)
+                    getSystemService(Context.INPUT_METHOD_SERVICE);
+            Log.d("MyApp", "Water Goal in Login : "+daily_goal);
+
+            inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                    InputMethodManager.HIDE_NOT_ALWAYS);
+            Snackbar snackbar = Snackbar.make(findViewById(R.id.relativeLayout), "E-Mail OR Password is not Correct\nPlease Check again ", Snackbar.LENGTH_SHORT);
+            ColoredSnackbar.info(snackbar).show();
+        }else{
+            int daily_water = prefs.getInt("daily_water",0);
+            Log.d("MyApp", "Daily Water in Login : " + daily_water);
+            startActivity(new Intent(this, MainActivity.class));
+        }
+
+/*
         Cursor c = db.fetchUser(user_login,password);
         Cursor c2 = db.getDailyWaterValue(user_login,password);
 
-            if(c != null || c2 != null){
+          if(c != null || c2 != null){
                 int water_goal_value = c.getInt(0);
                 int water_daily_value = c2.getInt(0);
-                Log.d("MyApp","Water Goal Value while Logining: " + water_goal_value);
-                Log.d("MyApp","Water Value while Logining: "+water_daily_value);
+                //Log.d("MyApp","Water Goal Value while Logining: " + water_goal_value);
+                //Log.d("MyApp","Water Value while Logining: "+water_daily_value);
                 SharedPreferences prefs = getSharedPreferences("user_info", MODE_PRIVATE);
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putString("username",user_login);
                 editor.putString("password",password);
                 editor.putInt("daily_goal_water", water_goal_value);
                 editor.putInt("daily_water",water_daily_value);
-                editor.apply(); // This line is IMPORTANT.
+                editor.apply(); // This line is IMPORTANT
 
                 db.close();
                 startActivity(intent);
             } else{
-
                 //Preventing & Closing Pop-Keyboard Immediately
                 InputMethodManager inputManager = (InputMethodManager)
                         getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -130,6 +172,7 @@ public class LoginActivity extends AppCompatActivity implements TransparentStatu
                 Snackbar snackbar = Snackbar.make(findViewById(R.id.relativeLayout), "E-Mail OR Password is not Correct\nPlease Check again ", Snackbar.LENGTH_SHORT);
                 ColoredSnackbar.info(snackbar).show();
             }
+*/
 
     }
 

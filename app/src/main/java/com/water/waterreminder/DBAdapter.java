@@ -46,7 +46,7 @@ public class DBAdapter extends SQLiteOpenHelper {
 
     private static final String TAG = "DBAdapter";
 
-    private static final String DATABASE_NAME = "MyDB";
+    private static final String DATABASE_NAME = "KeepInProgress";
     private static final String DATABASE_TABLE = "User";
     private static final String DATABASE_TABLE_DATE = "User_Date";
 
@@ -424,8 +424,7 @@ public class DBAdapter extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(sql, null);
         cursor.moveToFirst();
-        Log.d("MyApp", "DB Date : " + cursor.getString(0) + "\nCurrent Now : " + now);
-
+        //Log.d("MyApp", "DB Date : " + cursor.getString(0) + "\nCurrent Now : " + now);
         do {
             if (cursor.getString(0).equals(now)) {
                 //Log.d("MyApp", "DB Date : " + cursor.getString(0) + "\nCurrent Now : " + now);

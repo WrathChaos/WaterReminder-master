@@ -67,7 +67,7 @@ import com.water.waterreminder.R;
         // Do something. For example, fetch fresh data from backend to create a rich notification?
 
         Vibrator v = (Vibrator) this.getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
-        // Vibrate for 500 milliseconds
+        // Vibrate for 1000 milliseconds
         v.vibrate(1000);
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
         builder.setContentTitle("Water Reminder")

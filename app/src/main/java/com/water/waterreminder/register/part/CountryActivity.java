@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -19,6 +18,8 @@ import com.water.waterreminder.DBAdapter;
 import com.water.waterreminder.MainActivity;
 import com.water.waterreminder.R;
 import com.water.waterreminder.SettingsActivity;
+import com.water.waterreminder.background_tasks.MyTaskParams;
+import com.water.waterreminder.background_tasks.BackgroundTask;
 import com.water.waterreminder.pojos.User;
 
 import java.io.File;
@@ -45,6 +46,8 @@ public class CountryActivity extends AppCompatActivity {
     String country;
     int age;
     int daily_goal;
+    // ArrayList<MyTaskParams> batch_list = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,7 +57,7 @@ public class CountryActivity extends AppCompatActivity {
         // folder
         try {
             String destPath = "/data/data/" + getPackageName()
-                    + "/databases/MyDB";
+                    + "/databases/KeepInProgress";
             File file = new File(destPath);
             File path = new File("/data/data/" + getPackageName()
                     + "/databases/");
@@ -62,7 +65,7 @@ public class CountryActivity extends AppCompatActivity {
                 path.mkdirs();
                 Log.d("MyApp", "path...");
 
-                CopyDB(getBaseContext().getAssets().open("MyDB"),
+                CopyDB(getBaseContext().getAssets().open("KeepInProgress"),
                         new FileOutputStream(destPath));
             }
             else{
@@ -95,7 +98,7 @@ public class CountryActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //Get the clicked country name
-                TextView tv = (TextView)view.findViewById(R.id.country_name);
+                TextView tv = (TextView) view.findViewById(R.id.country_name);
                 country = tv.getText().toString();
 
 
@@ -111,7 +114,7 @@ public class CountryActivity extends AppCompatActivity {
                 daily_goal = prefs.getInt("daily_goal_water", 0);
                 int water_daily_value = 0;
                 SharedPreferences.Editor editor = prefs.edit();
-                editor.putInt("daily_water",water_daily_value);
+                editor.putInt("daily_water", water_daily_value);
                 editor.apply();
 
 
@@ -120,8 +123,8 @@ public class CountryActivity extends AppCompatActivity {
                 // Opening the database for reading data
                 try {
                     db.open();
-                    Log.d("MyApp","DB Opened");
-                } catch (Exception e){
+                    Log.d("MyApp", "DB Opened");
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
@@ -132,6 +135,20 @@ public class CountryActivity extends AppCompatActivity {
                 Log.d("MyApp", "Inserting ..");
                 db.addUser(new User(username, password, e_mail, gender, age, country, daily_goal));
 
+                /*
+                if(internet){
+                    backgroundTask.execute(params);
+                }else{
+                    batch_list.add(params);
+                }
+                */
+
+                String method = "Register";
+                BackgroundTask backgroundTask = new BackgroundTask(getApplicationContext());
+                MyTaskParams params = new MyTaskParams(method, username, password, e_mail, gender, age, country, daily_goal);
+                backgroundTask.execute(params);
+
+                //finish();
                 db.close();
                 Intent i = new Intent(getApplicationContext(),MainActivity.class);
                 startActivity(i);

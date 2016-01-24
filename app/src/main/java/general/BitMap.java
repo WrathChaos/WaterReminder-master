@@ -3,10 +3,9 @@ package general;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.Log;
 
 /**
- * Created by kurayogun on 06/10/15.
+ * Created by FreakyCoder on 06/10/15.
  */
 public class BitMap {
 
