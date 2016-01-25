@@ -1,10 +1,7 @@
 package com.water.waterreminder;
 
 import android.annotation.TargetApi;
-import android.app.AlarmManager;
 import android.app.Dialog;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -12,7 +9,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.media.SoundPool;
-import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -44,18 +40,8 @@ import com.water.waterreminder.background_tasks.InternetAvailability;
 import com.water.waterreminder.background_tasks.MyTaskParams;
 import com.water.waterreminder.background_tasks.UpdateWaterTask;
 import com.water.waterreminder.notification.NotificationEventReceiver;
-import com.water.waterreminder.notification.NotificationIntentService;
 import com.water.waterreminder.pojos.User;
 import com.water.waterreminder.secretText.SecretTextView;
-
-import java.io.BufferedWriter;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.InetAddress;
-import java.net.URL;
-import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -110,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
     int user_id;
     //Current Date
     String now;
+    int active_notification;
 
     //InternetPart
     InternetAvailability internetAvailability;
@@ -232,11 +219,15 @@ public class MainActivity extends AppCompatActivity {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
         String test = sdf.format(cal.getTime());
         String[] time = test.split(":");
-        Log.e("MyApp", "Time0 : " + test + "\nExact Hour0 : " + time[0]);
-
         if(Integer.parseInt(time[0])<22 && Integer.parseInt(time[0])>8){
             Log.e("MyApp", "Time : " + test + "\nExact Hour : " + time[0]);
-            NotificationEventReceiver.setupAlarm(getApplicationContext());
+            if(prefs.getInt("active_notification",0)==0) {
+                active_notification++;
+                editor.putInt("active_notification", active_notification);
+                Log.d("MyApp", "Notification is activated !"+active_notification);
+                NotificationEventReceiver.setupAlarm(getApplicationContext());
+            }else
+                Log.d("MyApp", "Notification is ALREADY activated !");
         }
 
         //Functions
@@ -472,7 +463,6 @@ public class MainActivity extends AppCompatActivity {
                             Log.d("MyApp", "ERROR updateWaterTask");
                             e.printStackTrace();
                         }
-
                     }
 
                     Log.d("MyApp", "Water Value Updated : " + update);
