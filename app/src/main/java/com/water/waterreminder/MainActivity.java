@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.app.AlarmManager;
 import android.app.Dialog;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -11,6 +12,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.media.SoundPool;
+import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -38,11 +40,22 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.water.waterreminder.anim.ColoredSnackbar;
+import com.water.waterreminder.background_tasks.InternetAvailability;
+import com.water.waterreminder.background_tasks.MyTaskParams;
+import com.water.waterreminder.background_tasks.UpdateWaterTask;
 import com.water.waterreminder.notification.NotificationEventReceiver;
 import com.water.waterreminder.notification.NotificationIntentService;
 import com.water.waterreminder.pojos.User;
 import com.water.waterreminder.secretText.SecretTextView;
 
+import java.io.BufferedWriter;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.InetAddress;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -98,6 +111,9 @@ public class MainActivity extends AppCompatActivity {
     //Current Date
     String now;
 
+    //InternetPart
+    InternetAvailability internetAvailability;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -125,6 +141,9 @@ public class MainActivity extends AppCompatActivity {
         //Graph Variables
         chart = (BarChart) findViewById(R.id.chart);
         btngraphs = (Button) findViewById(R.id.btngrph);
+
+        //Internet Variable
+        internetAvailability = new InternetAvailability(this);
 
         db = new DBAdapter(getApplicationContext());
         prefs = getSharedPreferences("user_info", MODE_PRIVATE);
@@ -158,34 +177,35 @@ public class MainActivity extends AppCompatActivity {
             user_id = cursor3.getInt(0);
 */
         if(!db.checkDateTableIDEmpty(user_id)) {
-            int id = prefs.getInt("user_id",0);
-            String e_mail = prefs.getString("user_email", "No E-Mail found, we might missed it, Sorry :(");
-            String gender = prefs.getString("gender", "No Gender found, we might have missed it, Sorry :(");
-            int age = prefs.getInt("age", 0);
-            String country = prefs.getString("country","No Country found, we might have missed it, Sorry :(");
-            daily_goal = prefs.getInt("daily_goal_water", 0);
-            int water_daily_value = 0;
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putInt("daily_water", water_daily_value);
-            editor.apply();
+            if(internetAvailability.isNetworkConnected()) {
+                int id = prefs.getInt("user_id", 0);
+                String e_mail = prefs.getString("user_email", "No E-Mail found, we might missed it, Sorry :(");
+                String gender = prefs.getString("gender", "No Gender found, we might have missed it, Sorry :(");
+                int age = prefs.getInt("age", 0);
+                String country = prefs.getString("country", "No Country found, we might have missed it, Sorry :(");
+                daily_goal = prefs.getInt("daily_goal_water", 0);
+                int water_daily_value = 0;
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putInt("daily_water", water_daily_value);
+                editor.apply();
 
-            DBAdapter db = new DBAdapter(getApplicationContext());
+                DBAdapter db = new DBAdapter(getApplicationContext());
 
-            // Opening the database for reading data
-            try {
-                db.open();
-                Log.d("MyApp", "DB Opened");
-            } catch (Exception e) {
-                e.printStackTrace();
+                // Opening the database for reading data
+                try {
+                    db.open();
+                    Log.d("MyApp", "DB Opened");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                /**
+                 * CRUD Operations
+                 * */
+                // Inserting Contacts
+                Log.d("MyApp", "Inserting ..");
+                db.addUser(new User(id, username, password, e_mail, gender, age, country, daily_goal));
             }
-
-            /**
-             * CRUD Operations
-             * */
-            // Inserting Contacts
-            Log.d("MyApp", "Inserting ..");
-            db.addUser(new User(id,username, password, e_mail, gender, age, country, daily_goal));
-
             Log.d("MyApp", "date table is empty ! User ID : " + user_id + "\nValue : " + getWater() + "\nDate : " + now);
             db.insertDate(user_id, getWater(), now, getTheCurrentDay());
             db.updateDay(now, username);
@@ -263,7 +283,6 @@ public class MainActivity extends AppCompatActivity {
                 //Log.d("MyApp", "Count>=7: " + values.getInt(0) + " ----- : " + b_side);
                 if(list[b_side]<=0)
                     list[b_side] = (int)a_side;
-
                 values.moveToNext();
             }
             for(int j=0; j<=count; j++) {
@@ -444,6 +463,18 @@ public class MainActivity extends AppCompatActivity {
                     change_water_perc = (daily_water / (daily_goal * 1.0)) * 100;
 
                     int update = db.updateDailyWaterValue(username.toLowerCase(), daily_water);
+                    if(internetAvailability.isNetworkConnected()) {
+                        UpdateWaterTask updateWaterTask = new UpdateWaterTask(getApplicationContext());
+                        MyTaskParams myTaskParams = new MyTaskParams(username,daily_water);
+                        try {
+                            updateWaterTask.execute(myTaskParams).get();
+                        } catch (Exception e){
+                            Log.d("MyApp", "ERROR updateWaterTask");
+                            e.printStackTrace();
+                        }
+
+                    }
+
                     Log.d("MyApp", "Water Value Updated : " + update);
                     if (add_water_value > 0 && update != 0) {
                         Snackbar snackbar = Snackbar.make(findViewById(R.id.anchor), add_water_value + " " + getResources().getString(R.string.snackbar_water_supply) + " !", Snackbar.LENGTH_SHORT);

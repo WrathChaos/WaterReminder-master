@@ -13,6 +13,7 @@ public class MyTaskParams {
     String country;
     int daily_goal;
     String user_login;
+    int daily_water;
 
     public MyTaskParams(String method, String username, String password, String email, String gender, int age, String country, int daily_goal) {
         this.method = method;
@@ -31,5 +32,8 @@ public class MyTaskParams {
         this.password = password;
     }
 
-
+    public MyTaskParams(String username, int daily_water) {
+        this.username = username;
+        this.daily_water = daily_water;
+    }
 }

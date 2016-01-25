@@ -1,15 +1,8 @@
 package com.water.waterreminder.background_tasks;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
-
-import com.water.waterreminder.MainActivity;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.InputStream;
@@ -23,8 +16,6 @@ import java.net.URLEncoder;
 /**
  * Created by freakycoder on 21/01/16.
  */
-
-
 public class BackgroundTask extends AsyncTask<MyTaskParams,Void,String> {
 
     Context context;
@@ -115,7 +106,7 @@ public class BackgroundTask extends AsyncTask<MyTaskParams,Void,String> {
                 bufferedReader.close();
                 inputStream.close();
                 httpURLConnection.disconnect();
-                Log.d("MyApp", "RESPONSE : "+response);
+
 
                 return response;
             }catch (Exception e){
@@ -134,35 +125,6 @@ public class BackgroundTask extends AsyncTask<MyTaskParams,Void,String> {
 
     @Override
     protected void onPostExecute(String result) {
-        SharedPreferences  prefs = context.getSharedPreferences("user_info", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
 
-        if(result.equals("-2")){
-            Log.d("MyApp", "fck");
-            editor.putInt("daily_goal_water",-2);
-        }else {
-            String arr[] = result.split(",");
-            int water_goal = Integer.parseInt(arr[0]);
-            int daily_water = Integer.parseInt(arr[1]);
-            String username = arr[2];
-            String password = arr[3];
-            int user_id = Integer.parseInt(arr[4]);
-            String email = arr[5];
-            String gender = arr[6];
-            int age = Integer.parseInt(arr[7]);
-            String country = arr[8];
-
-            editor.putInt("daily_goal_water", water_goal);
-            editor.putInt("daily_water", daily_water);
-            editor.putString("username", username);
-            editor.putString("password", password);
-            editor.putInt("user_id", user_id);
-            editor.putString("user_email", email);
-            editor.putString("gender", gender);
-            editor.putInt("age", age);
-            editor.putString("country", country);
-            editor.apply(); // This line is IMPORTANT
-            Log.d("MyApp", "Server Side Goal : " + water_goal);
-        }
     }
 }
