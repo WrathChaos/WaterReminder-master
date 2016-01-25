@@ -36,9 +36,10 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.water.waterreminder.anim.ColoredSnackbar;
+import com.water.waterreminder.background_tasks.BackgroundTask;
 import com.water.waterreminder.background_tasks.InternetAvailability;
+import com.water.waterreminder.background_tasks.MainPartTask;
 import com.water.waterreminder.background_tasks.MyTaskParams;
-import com.water.waterreminder.background_tasks.UpdateWaterTask;
 import com.water.waterreminder.notification.NotificationEventReceiver;
 import com.water.waterreminder.pojos.User;
 import com.water.waterreminder.secretText.SecretTextView;
@@ -159,12 +160,12 @@ public class MainActivity extends AppCompatActivity {
 
         // User_ID from Server
         user_id = prefs.getInt("user_id",0);
+        Log.d("MyApp", "SERVER USER ID : "+user_id);
 /*
         Cursor cursor3 = db.getUserID(username);
             user_id = cursor3.getInt(0);
-*/
+ */
         if(!db.checkDateTableIDEmpty(user_id)) {
-            if(internetAvailability.isNetworkConnected()) {
                 int id = prefs.getInt("user_id", 0);
                 String e_mail = prefs.getString("user_email", "No E-Mail found, we might missed it, Sorry :(");
                 String gender = prefs.getString("gender", "No Gender found, we might have missed it, Sorry :(");
@@ -175,7 +176,6 @@ public class MainActivity extends AppCompatActivity {
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putInt("daily_water", water_daily_value);
                 editor.apply();
-
                 DBAdapter db = new DBAdapter(getApplicationContext());
 
                 // Opening the database for reading data
@@ -192,8 +192,23 @@ public class MainActivity extends AppCompatActivity {
                 // Inserting Contacts
                 Log.d("MyApp", "Inserting ..");
                 db.addUser(new User(id, username, password, e_mail, gender, age, country, daily_goal));
-            }
             Log.d("MyApp", "date table is empty ! User ID : " + user_id + "\nValue : " + getWater() + "\nDate : " + now);
+            String method;
+            Log.d("MyApp", "check net : "+internetAvailability.isNetworkConnected());
+
+            if(internetAvailability.isNetworkConnected()){
+                Log.d("MyApp", "INSERT DATE 2");
+                method = "insert_date";
+                //INSERTING DATE
+                MainPartTask mainPartTask = new MainPartTask(getApplicationContext());
+                MyTaskParams params = new MyTaskParams(method, user_id, prefs.getInt("daily_water",-1), now, getTheCurrentDay());
+                mainPartTask.execute(params);
+                //UPDATING DAY
+                String method2 = "update_day";
+                MainPartTask mainPartTask2 = new MainPartTask(getApplicationContext());
+                MyTaskParams params2 = new MyTaskParams(prefs.getInt("daily_water",-1),getTheCurrentDay(),username,method2);
+                mainPartTask2.execute(params2);
+            }
             db.insertDate(user_id, getWater(), now, getTheCurrentDay());
             db.updateDay(now, username);
         }else{
@@ -201,8 +216,15 @@ public class MainActivity extends AppCompatActivity {
             String db_day = cursor.getString(0);
             Log.d("MyApp", "DB Day : "+db_day);
             if(!db_day.equals(exact_day)){
-                    Cursor cursor2 = db.getUserID(username);
-                    user_id = cursor2.getInt(0);
+                if(internetAvailability.isNetworkConnected()){
+                    Log.d("MyApp", "DAY DIFFERENT ! UPDATE DAY SERVER");
+                    //UPDATING DAY
+                    String method = "update_day";
+                    MainPartTask mainPartTask2 = new MainPartTask(getApplicationContext());
+                    MyTaskParams params2 = new MyTaskParams(prefs.getInt("daily_water",-1),getTheCurrentDay(),username,method);
+                    mainPartTask2.execute(params2);
+                }
+
                     db.updateDailyWaterValue(username, 0);
                     Log.d("MyApp", "Day is different ! " + "\n+Exact_day1 : " + exact_day + "\nDB Day1 : " + db_day);
                     editor.putInt("daily_water", 0);
@@ -211,6 +233,14 @@ public class MainActivity extends AppCompatActivity {
                }
             if (!db.checkDateValue(user_id, now)) {
                 Log.d("MyApp", "Table is exist! User ID : " + user_id + "\nValue : " + getWater() + "\nDate : " + now);
+                if(internetAvailability.isNetworkConnected()){
+                    Log.d("MyApp", "INSERT DATE 2");
+                    String method = "insert_date";
+                    //INSERTING DATE
+                    MainPartTask mainPartTask = new MainPartTask(getApplicationContext());
+                    MyTaskParams params = new MyTaskParams(method, user_id, prefs.getInt("daily_water",-1), now, getTheCurrentDay());
+                    mainPartTask.execute(params);
+                }
                 db.insertDate(user_id, getWater(), now, getTheCurrentDay());
                }
             }
@@ -237,7 +267,6 @@ public class MainActivity extends AppCompatActivity {
         if (db.checkDateTableIDEmpty(user_id)) {
             drawGrahps(db.getDateCount(user_id));
         }
-
 
     }
 
@@ -455,12 +484,13 @@ public class MainActivity extends AppCompatActivity {
 
                     int update = db.updateDailyWaterValue(username.toLowerCase(), daily_water);
                     if(internetAvailability.isNetworkConnected()) {
-                        UpdateWaterTask updateWaterTask = new UpdateWaterTask(getApplicationContext());
-                        MyTaskParams myTaskParams = new MyTaskParams(username,daily_water);
+                        String method = "update_water";
+                        MainPartTask mainPartTask = new MainPartTask(getApplicationContext());
+                        MyTaskParams myTaskParams = new MyTaskParams(user_id,method,username,daily_water,now);
                         try {
-                            updateWaterTask.execute(myTaskParams).get();
+                            mainPartTask.execute(myTaskParams).get();
                         } catch (Exception e){
-                            Log.d("MyApp", "ERROR updateWaterTask");
+                            Log.d("MyApp", "ERROR MainPartTask");
                             e.printStackTrace();
                         }
                     }

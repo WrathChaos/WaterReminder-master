@@ -423,15 +423,15 @@ public class DBAdapter extends SQLiteOpenHelper {
         Log.d("MyApp", "SQL : " + sql);
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(sql, null);
-        cursor.moveToFirst();
-        //Log.d("MyApp", "DB Date : " + cursor.getString(0) + "\nCurrent Now : " + now);
-        do {
-            if (cursor.getString(0).equals(now)) {
-                //Log.d("MyApp", "DB Date : " + cursor.getString(0) + "\nCurrent Now : " + now);
-                Log.d("MyApp", "date is exist and date : "+ cursor.getString(0));
-                return true;
-            }
-        }while(cursor.moveToNext());
+        if(cursor.moveToFirst()) {
+            do {
+                if (cursor.getString(0).equals(now)) {
+                    //Log.d("MyApp", "DB Date : " + cursor.getString(0) + "\nCurrent Now : " + now);
+                    Log.d("MyApp", "date is exist and date : " + cursor.getString(0));
+                    return true;
+                }
+            } while (cursor.moveToNext());
+        }
                 Log.d("MyApp", "Current Now : "+now);
                 Log.d("MyApp", "date is NOT exist");
                 return false;

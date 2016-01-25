@@ -5,6 +5,7 @@ package com.water.waterreminder.background_tasks;
  */
 public class MyTaskParams {
     String method;
+    int user_id;
     String username;
     String password;
     String email;
@@ -14,6 +15,8 @@ public class MyTaskParams {
     int daily_goal;
     String user_login;
     int daily_water;
+    String date;
+    int current_day;
 
     public MyTaskParams(String method, String username, String password, String email, String gender, int age, String country, int daily_goal) {
         this.method = method;
@@ -32,8 +35,29 @@ public class MyTaskParams {
         this.password = password;
     }
 
-    public MyTaskParams(String username, int daily_water) {
+    public MyTaskParams(int user_id,String method, String username, int daily_water,String date) {
+        this.date = date;
+        this.user_id = user_id;
+        this.method = method;
         this.username = username;
         this.daily_water = daily_water;
     }
+
+    public MyTaskParams(String method, int user_id, int daily_water, String date, int current_day) {
+        this.method = method;
+        this.user_id = user_id;
+        this.daily_water = daily_water;
+        this.date = date;
+        this.current_day = current_day;
+    }
+
+    public MyTaskParams(int daily_water,int current_day, String username, String method) {
+        this.daily_water = daily_water;
+        this.method = method;
+        this.username = username;
+        this.current_day = current_day;
+    }
+
+
+
 }
