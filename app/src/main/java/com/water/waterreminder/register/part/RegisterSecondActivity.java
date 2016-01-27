@@ -16,10 +16,12 @@ import android.widget.Toast;
 
 import com.water.waterreminder.DBAdapter;
 import com.water.waterreminder.R;
+import com.water.waterreminder.background_tasks.BackgroundTask;
+import com.water.waterreminder.background_tasks.MyTaskParams;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.concurrent.ExecutionException;
 
 
 public class RegisterSecondActivity extends AppCompatActivity {
@@ -74,8 +76,19 @@ public class RegisterSecondActivity extends AppCompatActivity {
                 String username = editText.getText().toString().toLowerCase();
                 String password = editText2.getText().toString();
                 DBAdapter db = new DBAdapter(getApplicationContext());
+                String method = "check_username";
+                BackgroundTask backgroundTask = new BackgroundTask(getApplicationContext());
+                MyTaskParams params = new MyTaskParams(method,username);
+                String checkUsername="0";
+                try {
+                    checkUsername = backgroundTask.execute(params).get();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
                 boolean usernameValidation = db.checkUsername(username);
-                if(username.equals("") || password.equals("")){
+                if(username.equals("") || password.equals("") || !(Integer.parseInt(checkUsername) > 0)){
                     Toast.makeText(getApplicationContext(), "Please enter a valid Username and Password", Toast.LENGTH_LONG).show();
                     // FIXME: 25/11/15 Snackbar does not appear, FIX IT !
                     Snackbar snackbar = Snackbar.make(findViewById(R.id.relativeLayoutSecond),"Please enter a valid Username.",Snackbar.LENGTH_LONG);

@@ -72,4 +72,10 @@ public class MyTaskParams {
         this.username = username;
         this.daily_goal = daily_goal;
     }
+
+    //Check email && Check username
+    public MyTaskParams(String method, String email) {
+        this.method = method;
+        this.email = email;
+    }
 }

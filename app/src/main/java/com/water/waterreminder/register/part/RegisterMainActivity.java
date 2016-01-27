@@ -22,6 +22,10 @@ import android.widget.Toast;
 import com.water.waterreminder.DBAdapter;
 import com.water.waterreminder.MainActivity;
 import com.water.waterreminder.R;
+import com.water.waterreminder.background_tasks.BackgroundTask;
+import com.water.waterreminder.background_tasks.MyTaskParams;
+
+import java.util.concurrent.ExecutionException;
 
 public class RegisterMainActivity extends AppCompatActivity {
 
@@ -136,10 +140,21 @@ public class RegisterMainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String email = editText.getText().toString().toLowerCase();
-
+                String method = "check_email";
                 DBAdapter db = new DBAdapter(getApplicationContext());
+                BackgroundTask backgroundTask = new BackgroundTask(getApplicationContext());
+                MyTaskParams params = new MyTaskParams(method,email);
+                String checkEmail="0";
+                try {
+                    checkEmail = backgroundTask.execute(params).get();
+                    Log.d("MyApp", "checkEmail : "+checkEmail);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
                 boolean emailValidation = db.checkEMail(email);
-                if(email.equals("") || !email.contains("@") ){
+                if(email.equals("") || !email.contains("@") || !(Integer.parseInt(checkEmail)>0)){
                     Toast.makeText(getApplicationContext(),"Please enter a valid E-Mail",Toast.LENGTH_LONG).show();
                     // FIXME: 25/11/15 Snackbar does not appear, FIX IT !
                     Snackbar snackbar = Snackbar.make(findViewById(R.id.relativeLayout_mainRegister),"Please enter a valid E-Mail.",Snackbar.LENGTH_LONG);

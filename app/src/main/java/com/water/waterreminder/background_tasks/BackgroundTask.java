@@ -32,6 +32,7 @@ public class BackgroundTask extends AsyncTask<MyTaskParams,Void,String> {
     protected String doInBackground(MyTaskParams... params) {
         String reg_url = "http://keepinprogress.com/db_register.php";
         String login_url = "http://keepinprogress.com/db_login.php";
+        String functions_url = "http://keepinprogress.com/db_functions.php";
         String method             = params[0].method;
         if(method.equals("Register")){
             String username           = params[0].username;
@@ -72,13 +73,10 @@ public class BackgroundTask extends AsyncTask<MyTaskParams,Void,String> {
             Log.d("MyApp", "BufferedReader Register : "+bufferedReader);
             String response = "";
             String line = "";
-                Log.d("MyApp", "bufferead null ? : "+ bufferedReader.readLine());
             while((line = bufferedReader.readLine()) != null){
                 response += line;
             }
                 Log.d("MyApp", "response id : "+response);
-
-
             bufferedReader.close();
             inputStream.close();
             httpURLConnection.disconnect();
@@ -101,9 +99,7 @@ public class BackgroundTask extends AsyncTask<MyTaskParams,Void,String> {
                 httpURLConnection.setDoInput(true); // This line is IMPORTANT to get value from server !
 
                 OutputStream outputStream = httpURLConnection.getOutputStream();
-                Log.d("MyApp", "OS : "+outputStream);
                 BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
-                Log.d("MyApp", "bufferedWriter : "+bufferedWriter);
                 String data =
                         URLEncoder.encode("user_login","UTF-8")+"="+URLEncoder.encode(user_login,"UTF-8")+"&"+
                         URLEncoder.encode("password","UTF-8")+"="+URLEncoder.encode(password,"UTF-8");
@@ -114,9 +110,7 @@ public class BackgroundTask extends AsyncTask<MyTaskParams,Void,String> {
 
                 //RESPONSE FROM SERVER
                 InputStream inputStream = httpURLConnection.getInputStream();
-                Log.d("MyApp", "InputStream : "+inputStream);
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
-                Log.d("MyApp", "BufferedReader : "+bufferedReader);
                 String response = "";
                 String line = "";
                 while((line = bufferedReader.readLine()) != null){
@@ -128,6 +122,80 @@ public class BackgroundTask extends AsyncTask<MyTaskParams,Void,String> {
                 return response;
             }catch (Exception e){
                 Log.d("MyApp", "ERROR URL LOGIN PART");
+                e.printStackTrace();
+            }
+        }else if(method.equals("check_email")){
+            String email = params[0].email;
+            try {
+                URL url = new URL(functions_url);
+                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoOutput(true);
+                httpURLConnection.setDoInput(true); // This line is IMPORTANT to get value from server !
+
+                OutputStream OS =  httpURLConnection.getOutputStream();
+                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(OS,"UTF-8"));
+                String data =
+                        URLEncoder.encode("method","UTF-8")+"="+ URLEncoder.encode(method,"UTF-8")+"&"+
+                                URLEncoder.encode("email","UTF-8")+"="+ URLEncoder.encode(email,"UTF-8");
+                bufferedWriter.write(data);
+                bufferedWriter.flush();
+                bufferedWriter.close();
+                OS.close();
+
+                //RESPONSE FROM SERVER
+                InputStream inputStream = httpURLConnection.getInputStream();
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
+                String response = "";
+                String line = "";
+                while((line = bufferedReader.readLine()) != null){
+                    response += line;
+                }
+                Log.d("MyApp", "response checkemail : "+response);
+                bufferedReader.close();
+                inputStream.close();
+                httpURLConnection.disconnect();
+
+                return response;
+            }catch (Exception e){
+                Log.d("MyApp", "check email error !");
+                e.printStackTrace();
+            }
+        }else if(method.equals("check_username")){
+            String username = params[0].email;
+            try {
+                URL url = new URL(functions_url);
+                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoOutput(true);
+                httpURLConnection.setDoInput(true); // This line is IMPORTANT to get value from server !
+
+                OutputStream OS =  httpURLConnection.getOutputStream();
+                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(OS,"UTF-8"));
+                String data =
+                        URLEncoder.encode("method","UTF-8")+"="+ URLEncoder.encode(method,"UTF-8")+"&"+
+                                URLEncoder.encode("new_username","UTF-8")+"="+ URLEncoder.encode(username,"UTF-8");
+                bufferedWriter.write(data);
+                bufferedWriter.flush();
+                bufferedWriter.close();
+                OS.close();
+
+                //RESPONSE FROM SERVER
+                InputStream inputStream = httpURLConnection.getInputStream();
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
+                String response = "";
+                String line = "";
+                while((line = bufferedReader.readLine()) != null){
+                    response += line;
+                }
+                Log.d("MyApp", "response checkUsername: "+response);
+                bufferedReader.close();
+                inputStream.close();
+                httpURLConnection.disconnect();
+
+                return response;
+            }catch (Exception e){
+                Log.d("MyApp", "check username error !");
                 e.printStackTrace();
             }
         }
