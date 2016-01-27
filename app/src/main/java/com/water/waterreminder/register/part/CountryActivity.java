@@ -1,5 +1,6 @@
 package com.water.waterreminder.register.part;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -37,7 +38,6 @@ public class CountryActivity extends AppCompatActivity {
     final List<Country> countryList=new ArrayList<>();
     ListView listView ;
     ListViewAdapter adapter;
-    final Context context = this;
 
     String username;
     String password;
@@ -46,7 +46,7 @@ public class CountryActivity extends AppCompatActivity {
     String country;
     int age;
     int daily_goal;
-    // ArrayList<MyTaskParams> batch_list = new ArrayList<>();
+    int user_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,12 +128,28 @@ public class CountryActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
+                String method = "Register";
+                BackgroundTask backgroundTask = new BackgroundTask(getApplicationContext());
+                MyTaskParams params = new MyTaskParams(method, username, password, e_mail, gender, age, country, daily_goal);
+                try {
+                   String user_id_response =  backgroundTask.execute(params).get();
+                    Log.d("MyApp", "CheckUserID : " + user_id_response);
+
+                    user_id = Integer.parseInt(user_id_response);
+                    editor.putInt("user_id",user_id);
+                    Log.d("MyApp", "Server USER ID : "+user_id);
+
+                }catch (Exception e){
+                    Log.d("MyApp", "Register execute ruined !");
+                    e.printStackTrace();
+                }
+
                 /**
                  * CRUD Operations
                  * */
                 // Inserting Contacts
                 Log.d("MyApp", "Inserting ..");
-                db.addUser(new User(username, password, e_mail, gender, age, country, daily_goal));
+                db.addUser(new User(user_id,username, password, e_mail, gender, age, country, daily_goal));
 
                 /*
                 if(internet){
@@ -143,10 +159,6 @@ public class CountryActivity extends AppCompatActivity {
                 }
                 */
 
-                String method = "Register";
-                BackgroundTask backgroundTask = new BackgroundTask(getApplicationContext());
-                MyTaskParams params = new MyTaskParams(method, username, password, e_mail, gender, age, country, daily_goal);
-                backgroundTask.execute(params);
 
                 //finish();
                 db.close();

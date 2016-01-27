@@ -67,16 +67,13 @@ public class MainPartTask extends AsyncTask<MyTaskParams,Void,Void> {
                 httpURLConnection.setRequestMethod("POST");
                 httpURLConnection.setDoOutput(true);
                 OutputStream OS =  httpURLConnection.getOutputStream();
-                Log.d("MyApp", "OS : "+OS);
                 BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(OS,"UTF-8"));
-                Log.d("MyApp", "BufferedWriter : "+bufferedWriter);
                 String data =
                         URLEncoder.encode("method","UTF-8")+"="+ URLEncoder.encode(""+method,"UTF-8")+"&"+
                         URLEncoder.encode("user_id","UTF-8")+"="+ URLEncoder.encode(""+user_id,"UTF-8")+"&"+
                                 URLEncoder.encode("daily_water","UTF-8")+"="+ URLEncoder.encode(""+daily_water2,"UTF-8")+"&"+
                                 URLEncoder.encode("date","UTF-8")+"="+ URLEncoder.encode(""+date,"UTF-8")+"&"+
                                 URLEncoder.encode("current_day","UTF-8")+"="+ URLEncoder.encode(""+current_day,"UTF-8");
-                Log.d("MyApp", "Data insert date : "+data);
                 bufferedWriter.write(data);
                 bufferedWriter.flush();
                 bufferedWriter.close();

@@ -24,11 +24,14 @@ import android.widget.TextView;
 
 import com.water.waterreminder.anim.AnimationUtils;
 import com.water.waterreminder.anim.ColoredSnackbar;
+import com.water.waterreminder.background_tasks.MyTaskParams;
+import com.water.waterreminder.background_tasks.ProfilePartTask;
 import com.water.waterreminder.pojos.Statistic;
 
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 import general.BitMap;
 
@@ -44,6 +47,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     DBAdapter db;
     SharedPreferences prefs;
+    SharedPreferences.Editor editor;
     String username;
     String password;
     int shared_water_goal;
@@ -64,8 +68,6 @@ public class ProfileActivity extends AppCompatActivity {
 
 
         prefs = getSharedPreferences("user_info", MODE_PRIVATE);
-
-
         username = prefs.getString("username", "Username cannot be found in ProfileActivity");
         password = prefs.getString("password", "Password cannot be found in ProfileActivity");
         shared_water_goal = prefs.getInt("daily_goal_water",0);
@@ -112,10 +114,26 @@ public class ProfileActivity extends AppCompatActivity {
         alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 String new_un = new_username.getText().toString().toLowerCase();
-                int update = db.updateUsername(username.toLowerCase(),new_un);
 
-                if (update > 0) {
+                String method = "update_username";
+                ProfilePartTask profilePartTask = new ProfilePartTask(getApplicationContext());
+                MyTaskParams params = new MyTaskParams(method,username.toLowerCase(),new_un,true);
+                String updateCheck="0";
+                try {
+                    updateCheck = profilePartTask.execute(params).get();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+
+                int update = db.updateUsername(username.toLowerCase(), new_un);
+
+                if (Integer.parseInt(updateCheck) > 0 && update >0) {
                     profileName.setText(firstLetterCapital(new_un));
+                    editor = prefs.edit();
+                    editor.putString("username",new_un);
+                    editor.apply(); // This line is IMPORTANT.
                     Snackbar snackbar = Snackbar.make(findViewById(R.id.relativeLayout), getString(R.string.name_changed_success), Snackbar.LENGTH_LONG);
                     snackbar.show();
                 } else {
@@ -124,7 +142,6 @@ public class ProfileActivity extends AppCompatActivity {
                 }
             }
         });
-
         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 // Canceled.
@@ -154,8 +171,21 @@ public class ProfileActivity extends AppCompatActivity {
         alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 int new_goal = Integer.parseInt(new_water_goal.getText().toString());
+                String method = "update_water_goal";
+                ProfilePartTask profilePartTask = new ProfilePartTask(getApplicationContext());
+                MyTaskParams params = new MyTaskParams(method,username,new_goal);
+                String updateCheck="0";
+                try {
+                    updateCheck = profilePartTask.execute(params).get();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
                 int update = db.updateWaterGoal(username.toLowerCase(), new_goal);
-                if (update > 0) {
+
+                // check is in server side
+                if (Integer.parseInt(updateCheck) > 0 && update>0) {
                     current_water_goal.setText(new_goal + "");
                     SharedPreferences.Editor editor = prefs.edit();
                     editor.putInt("daily_goal_water",new_goal);
@@ -185,13 +215,13 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     public void backButton(View view){
-        startActivity(new Intent(this,MainActivity.class));
+        startActivity(new Intent(this, MainActivity.class));
     }
 
     public void fillStatistics(){
        float avg = prefs.getFloat("average",0);
-        double sum = db.getSumWaterValue(user_id);
-        int count = db.getDateCount(user_id);
+       double sum = db.getSumWaterValue(user_id);
+       int count = db.getDateCount(user_id);
        list.add(new Statistic(R.drawable.ic_info,getString(R.string.average),new DecimalFormat("##.##").format(avg)+" cups"));
        list.add(new Statistic(R.drawable.ic_settings_special,getString(R.string.total_days),count+" "+ getString(R.string.days)));
        list.add(new Statistic(R.drawable.ic_person,getString(R.string.total_water_cons),(int)sum+" "+getString(R.string.cup)));
@@ -271,6 +301,33 @@ public class ProfileActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

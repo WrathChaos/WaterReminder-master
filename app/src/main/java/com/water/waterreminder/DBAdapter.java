@@ -43,18 +43,26 @@ public class DBAdapter extends SQLiteOpenHelper {
     public static final String KEY_DATE = "date";
     public static final String KEY_CURRENT_DATE = "current_day";
 
+    //Batch Table
+
+    public static final String KEY_DATE_ID_BATCH = "date_id";
+    public static final String KEY_VALUE_BATCH = "value";
+    public static final String KEY_DATE_BATCH = "date";
+    public static final String KEY_CURRENT_DATE_BATCH = "current_day";
 
     private static final String TAG = "DBAdapter";
 
     private static final String DATABASE_NAME = "KeepInProgress";
     private static final String DATABASE_TABLE = "User";
     private static final String DATABASE_TABLE_DATE = "User_Date";
+    private static final String DATABASE_TABLE_BATCH = "Batch_Table";
 
 
-    private static final int DATABASE_VERSION = 15;
+
+    private static final int DATABASE_VERSION = 17;
 
     private static final String DATABASE_CREATE = "CREATE TABLE `User` (\n" +
-            "\t`id`\tINTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\n" +
+            "\t`id`\tINTEGER NOT NULL PRIMARY KEY,\n" +
             "\t`username`\tTEXT NOT NULL,\n" +
             "\t`password`\tTEXT NOT NULL,\n" +
             "\t`email`\tTEXT NOT NULL,\n" +
@@ -77,6 +85,13 @@ public class DBAdapter extends SQLiteOpenHelper {
             "\t`current_day`\tINTEGER\n" +
             ");";
 
+    private static final String DATABASE_CREATE_BATCH = "CREATE TABLE `Batch_Table` (\n" +
+            "\t`date_id`\tINTEGER NOT NULL,\n" +
+            "\t`value`\tINTEGER,\n" +
+            "\t`date`\tTEXT,\n" +
+            "\t`current_day`\tINTEGER\n" +
+            ");";
+
     public DBAdapter(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -89,6 +104,7 @@ public class DBAdapter extends SQLiteOpenHelper {
         try {
             db.execSQL(DATABASE_CREATE_DATE);
             db.execSQL(DATABASE_CREATE);
+            db.execSQL(DATABASE_CREATE_BATCH);
 
         } catch (android.database.SQLException e) {
             e.printStackTrace();
@@ -115,6 +131,7 @@ public class DBAdapter extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
+        values.put(KEY_ROWID,user.getId());                                    //User ID from Server side
         values.put(KEY_NAME, user.getUsername().toLowerCase());              // User Name
         values.put(KEY_PASSWORD, user.getPassword());                        // User Password
         values.put(KEY_EMAIL, user.getEmail().toLowerCase());              // User Email
@@ -175,7 +192,7 @@ public class DBAdapter extends SQLiteOpenHelper {
             return getWaterGoalValue(user_login, password);
         } else {
             Log.d("MyApp", "Username Logining...");
-            String sql2 = "SELECT " + KEY_NAME + "," + KEY_PASSWORD + " FROM " + DATABASE_TABLE + " WHERE " + KEY_NAME + "=" + "'" + user_login.toLowerCase() + "'" + " AND " + KEY_PASSWORD + "=" + "'" + password + "'";
+            String sql2 = "SELECT " + KEY_NAME + "," + KEY_PASSWORD +","+KEY_ROWID+ " FROM " + DATABASE_TABLE + " WHERE " + KEY_NAME + "=" + "'" + user_login.toLowerCase() + "'" + " AND " + KEY_PASSWORD + "=" + "'" + password + "'";
             Cursor cursor2 = db.rawQuery(sql2, null);
             if (cursor2.moveToFirst()) {
                 return getWaterGoalValue(user_login, password);
@@ -376,6 +393,22 @@ public class DBAdapter extends SQLiteOpenHelper {
         db.close(); // Closing database connection
     }
 
+    //Inserting Batch_Table if internet is not available
+    public void insertDateBatch(int id, int value, String date,int current_date) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_DATE_ID_BATCH, id);
+        values.put(KEY_VALUE_BATCH, value);
+        values.put(KEY_DATE_BATCH, date);
+        values.put(KEY_CURRENT_DATE_BATCH,current_date);
+
+        Log.d("MyApp", "Date is created!");
+        // Inserting Row
+        db.insertWithOnConflict(DATABASE_TABLE_BATCH, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+        db.close(); // Closing database connection
+    }
+
     public int getDateCount(int id){
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor mCount= db.rawQuery("SELECT COUNT(*) FROM " + DATABASE_TABLE_DATE +" WHERE " +KEY_DATE_ID+" = "+id, null);
@@ -402,7 +435,7 @@ public class DBAdapter extends SQLiteOpenHelper {
         return null;
     }
 
-    //Insert value on User_date
+    //Update value on User_date
     public int updateCurrentValue(int value, int user_id,String now) {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -415,6 +448,21 @@ public class DBAdapter extends SQLiteOpenHelper {
         // updating username row
         //return db.update(DATABASE_TABLE, values, selection, selectionArgs);
         return db.update(DATABASE_TABLE_DATE, values, selection, selectionArgs);
+    }
+
+    //Update value on Batch
+    public int updateCurrentValueBatch(int value, int user_id,String now) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        String selection = KEY_DATE_ID_BATCH + " = ? AND " + KEY_DATE_BATCH +" = ?";
+        String[] selectionArgs = {""+user_id,now};
+
+        values.put(KEY_VALUE_BATCH, value);
+        Log.d("MyApp", "Day is updated : " + value);
+        // updating username row
+        //return db.update(DATABASE_TABLE, values, selection, selectionArgs);
+        return db.update(DATABASE_TABLE_BATCH, values, selection, selectionArgs);
     }
 
 

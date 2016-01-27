@@ -48,6 +48,8 @@ public class BackgroundTask extends AsyncTask<MyTaskParams,Void,String> {
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
             httpURLConnection.setRequestMethod("POST");
             httpURLConnection.setDoOutput(true);
+            httpURLConnection.setDoInput(true); // This line is IMPORTANT to get value from server !
+
             OutputStream OS =  httpURLConnection.getOutputStream();
             BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(OS,"UTF-8"));
             String data =
@@ -62,9 +64,26 @@ public class BackgroundTask extends AsyncTask<MyTaskParams,Void,String> {
             bufferedWriter.flush();
             bufferedWriter.close();
             OS.close();
-            InputStream IS = httpURLConnection.getInputStream();
-            IS.close();
-            return "Registration succeed..!";
+
+            //RESPONSE FROM SERVER
+            InputStream inputStream = httpURLConnection.getInputStream();
+            Log.d("MyApp", "InputStream Register : "+inputStream);
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
+            Log.d("MyApp", "BufferedReader Register : "+bufferedReader);
+            String response = "";
+            String line = "";
+                Log.d("MyApp", "bufferead null ? : "+ bufferedReader.readLine());
+            while((line = bufferedReader.readLine()) != null){
+                response += line;
+            }
+                Log.d("MyApp", "response id : "+response);
+
+
+            bufferedReader.close();
+            inputStream.close();
+            httpURLConnection.disconnect();
+
+            return response;
         }catch (Exception e){
             Log.d("MyApp", "ERROR URL");
             e.printStackTrace();
@@ -106,14 +125,11 @@ public class BackgroundTask extends AsyncTask<MyTaskParams,Void,String> {
                 bufferedReader.close();
                 inputStream.close();
                 httpURLConnection.disconnect();
-
-
                 return response;
             }catch (Exception e){
                 Log.d("MyApp", "ERROR URL LOGIN PART");
                 e.printStackTrace();
             }
-
         }
         return null;
     }

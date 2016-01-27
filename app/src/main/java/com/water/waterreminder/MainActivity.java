@@ -157,10 +157,15 @@ public class MainActivity extends AppCompatActivity {
             Log.d("MyApp", "Exact_Day : " + exact_day);
             Log.d("MyApp", "username : "+username);
 
-
-        // User_ID from Server
-        user_id = prefs.getInt("user_id",0);
-        Log.d("MyApp", "SERVER USER ID : "+user_id);
+        if(internetAvailability.isNetworkConnected()) {
+            // User_ID from Server
+            user_id = prefs.getInt("user_id", 0);
+            Log.d("MyApp", "SERVER USER ID : " + user_id);
+        }else{
+            Cursor cursor = db.getUserID(username);
+            user_id = cursor.getInt(0);
+            Log.d("MyApp", "DB ID : "+user_id);
+        }
 /*
         Cursor cursor3 = db.getUserID(username);
             user_id = cursor3.getInt(0);
@@ -176,15 +181,6 @@ public class MainActivity extends AppCompatActivity {
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putInt("daily_water", water_daily_value);
                 editor.apply();
-                DBAdapter db = new DBAdapter(getApplicationContext());
-
-                // Opening the database for reading data
-                try {
-                    db.open();
-                    Log.d("MyApp", "DB Opened");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
 
                 /**
                  * CRUD Operations
@@ -208,6 +204,9 @@ public class MainActivity extends AppCompatActivity {
                 MainPartTask mainPartTask2 = new MainPartTask(getApplicationContext());
                 MyTaskParams params2 = new MyTaskParams(prefs.getInt("daily_water",-1),getTheCurrentDay(),username,method2);
                 mainPartTask2.execute(params2);
+            }else{
+                //Inserting datas on batch because internet is not available
+                db.insertDateBatch(user_id, getWater(), now, getTheCurrentDay());
             }
             db.insertDate(user_id, getWater(), now, getTheCurrentDay());
             db.updateDay(now, username);
@@ -224,7 +223,6 @@ public class MainActivity extends AppCompatActivity {
                     MyTaskParams params2 = new MyTaskParams(prefs.getInt("daily_water",-1),getTheCurrentDay(),username,method);
                     mainPartTask2.execute(params2);
                 }
-
                     db.updateDailyWaterValue(username, 0);
                     Log.d("MyApp", "Day is different ! " + "\n+Exact_day1 : " + exact_day + "\nDB Day1 : " + db_day);
                     editor.putInt("daily_water", 0);
@@ -232,7 +230,7 @@ public class MainActivity extends AppCompatActivity {
                     db.updateDay(exact_day, username);
                }
             if (!db.checkDateValue(user_id, now)) {
-                Log.d("MyApp", "Table is exist! User ID : " + user_id + "\nValue : " + getWater() + "\nDate : " + now);
+                Log.d("MyApp", "Table is exist! User ID : " + db.getUserID(username) + "\nValue : " + getWater() + "\nDate : " + now);
                 if(internetAvailability.isNetworkConnected()){
                     Log.d("MyApp", "INSERT DATE 2");
                     String method = "insert_date";
@@ -240,6 +238,9 @@ public class MainActivity extends AppCompatActivity {
                     MainPartTask mainPartTask = new MainPartTask(getApplicationContext());
                     MyTaskParams params = new MyTaskParams(method, user_id, prefs.getInt("daily_water",-1), now, getTheCurrentDay());
                     mainPartTask.execute(params);
+                }else{
+                    //Inserting datas on batch because internet is not available
+                    db.insertDateBatch(user_id, getWater(), now, getTheCurrentDay());
                 }
                 db.insertDate(user_id, getWater(), now, getTheCurrentDay());
                }
@@ -382,15 +383,6 @@ public class MainActivity extends AppCompatActivity {
         //SharedPreferences Getting Items
         daily_goal = prefs.getInt("daily_goal_water", 0);
         daily_water = prefs.getInt("daily_water",0);
-        /*
-        Cursor cursor = db.getDailyWaterValue(username,password);
-        if(cursor.moveToFirst()) {
-            daily_water = cursor.getInt(0);
-            Log.d("MyApp", "Daily Water from DB : " + cursor.getInt(0));
-        } else{
-            int flag = db.updateCurrentValue(0, user_id,now);
-            Log.d("MyApp", "Water is changed by registeration : 0"+"Flag : "+flag);
-        }*/
 
         Log.d("MyApp", "Daily Goal From Shared : " + prefs.getInt("daily_goal_water", 0));
         total_water_textView.setText(daily_water + " / " + daily_goal);
@@ -500,6 +492,9 @@ public class MainActivity extends AppCompatActivity {
                         Snackbar snackbar = Snackbar.make(findViewById(R.id.anchor), add_water_value + " " + getResources().getString(R.string.snackbar_water_supply) + " !", Snackbar.LENGTH_SHORT);
                         ColoredSnackbar.info(snackbar).show();
                         int flag = db.updateCurrentValue(daily_water, user_id, now);
+                        if(!internetAvailability.isNetworkConnected()){
+                            int batchUpdateflag = db.updateCurrentValueBatch(daily_water, user_id, now);
+                        }
                         //editor = prefs.edit();
                         editor.putInt("daily_water", daily_water);
                         editor.apply();
@@ -515,6 +510,9 @@ public class MainActivity extends AppCompatActivity {
                         Snackbar snackbar = Snackbar.make(findViewById(R.id.anchor), 1 + " " + getResources().getString(R.string.snackbar_water_supply_delete) + " !", Snackbar.LENGTH_SHORT);
                         ColoredSnackbar.info(snackbar).show();
                         int flag = db.updateCurrentValue(daily_water, user_id, now);
+                        if(!internetAvailability.isNetworkConnected()){
+                            int batchUpdateflag = db.updateCurrentValueBatch(daily_water,user_id,now);
+                        }
                         editor.putInt("daily_water", daily_water);
                         editor.apply();
                         Log.d("MyApp", "Current Value is updated ?: " + flag + "\nValue : " + daily_water + "\nDate : " + now);

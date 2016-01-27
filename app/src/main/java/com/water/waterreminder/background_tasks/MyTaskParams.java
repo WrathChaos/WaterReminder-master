@@ -7,6 +7,7 @@ public class MyTaskParams {
     String method;
     int user_id;
     String username;
+    String new_username;
     String password;
     String email;
     String gender;
@@ -58,6 +59,17 @@ public class MyTaskParams {
         this.current_day = current_day;
     }
 
+    //Update Username
+    public MyTaskParams(String method, String username, String new_username,boolean flag) {
+        this.method = method;
+        this.username = username;
+        this.new_username = new_username;
+    }
 
-
+    //Update Daily Goal
+    public MyTaskParams(String method, String username, int daily_goal) {
+        this.method = method;
+        this.username = username;
+        this.daily_goal = daily_goal;
+    }
 }

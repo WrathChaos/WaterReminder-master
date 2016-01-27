@@ -132,7 +132,7 @@ public class LoginActivity extends AppCompatActivity implements TransparentStatu
                 SharedPreferences.Editor editor = prefs.edit();
 
                 if(checkValue.equals("-2")){
-                    Log.d("MyApp", "fck");
+                    Log.d("MyApp", "server side login ruined !");
                     editor.putInt("daily_goal_water",-2);
                 }else {
                     String arr[] = checkValue.split(",");
@@ -157,6 +157,8 @@ public class LoginActivity extends AppCompatActivity implements TransparentStatu
                     editor.putString("country", country);
                     editor.apply(); // This line is IMPORTANT
                     Log.d("MyApp", "Server Side Goal : " + water_goal);
+                    Log.d("MyApp", "Server Side User ID : " + user_id);
+
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -188,6 +190,8 @@ public class LoginActivity extends AppCompatActivity implements TransparentStatu
 
           if(c != null || c2 != null){
                 int water_goal_value = c.getInt(0);
+                int user_id = c.getInt(2);
+                Log.d("MyApp", "DB SIDE User_ID : "+user_id);
                 int water_daily_value = c2.getInt(0);
                 //Log.d("MyApp","Water Goal Value while Logining: " + water_goal_value);
                 //Log.d("MyApp","Water Value while Logining: "+water_daily_value);
@@ -195,6 +199,7 @@ public class LoginActivity extends AppCompatActivity implements TransparentStatu
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putString("username",user_login);
                 editor.putString("password",password);
+                editor.putInt("user_id",user_id);
                 editor.putInt("daily_goal_water", water_goal_value);
                 editor.putInt("daily_water",water_daily_value);
                 editor.apply(); // This line is IMPORTANT
@@ -216,8 +221,13 @@ public class LoginActivity extends AppCompatActivity implements TransparentStatu
     }
 
     public void registerButton(View view){
-        Intent i = new Intent(this,RegisterMainActivity.class);
-        startActivity(i);
+        if(internetAvailability.isNetworkConnected()) {
+            Intent i = new Intent(this, RegisterMainActivity.class);
+            startActivity(i);
+        }else{
+            Snackbar snackbar = Snackbar.make(findViewById(R.id.relativeLayout), "Please first check your internet connection :)", Snackbar.LENGTH_LONG);
+            ColoredSnackbar.info(snackbar).show();
+        }
     }
 
     @Override
