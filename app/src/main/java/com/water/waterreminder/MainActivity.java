@@ -97,7 +97,11 @@ public class MainActivity extends AppCompatActivity {
     int user_id;
     //Current Date
     String now;
+    String exact_day;
     int active_notification;
+
+    int start_value;
+    int end_value;
 
     //InternetPart
     InternetAvailability internetAvailability;
@@ -140,6 +144,9 @@ public class MainActivity extends AppCompatActivity {
         username = prefs.getString("username","Username cannot be found in MainActivity");
         password = prefs.getString("password","Password cannot be found in MainActivity");
 
+        start_value = prefs.getInt("start_value",8);
+        end_value = prefs.getInt("end_value",22);
+
         // Opening the database for reading data
         try {
             db.open();
@@ -149,13 +156,10 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-            now = df.format(new Date());
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        now = df.format(new Date());
 
-
-            String exact_day = now;
-            Log.d("MyApp", "Exact_Day : " + exact_day);
-            Log.d("MyApp", "username : "+username);
+        exact_day = now;
 
         if(internetAvailability.isNetworkConnected()) {
             // User_ID from Server
@@ -166,28 +170,85 @@ public class MainActivity extends AppCompatActivity {
             user_id = cursor.getInt(0);
             Log.d("MyApp", "DB ID : "+user_id);
         }
-/*
-        Cursor cursor3 = db.getUserID(username);
-            user_id = cursor3.getInt(0);
- */
-        if(!db.checkDateTableIDEmpty(user_id)) {
-                int id = prefs.getInt("user_id", 0);
-                String e_mail = prefs.getString("user_email", "No E-Mail found, we might missed it, Sorry :(");
-                String gender = prefs.getString("gender", "No Gender found, we might have missed it, Sorry :(");
-                int age = prefs.getInt("age", 0);
-                String country = prefs.getString("country", "No Country found, we might have missed it, Sorry :(");
-                daily_goal = prefs.getInt("daily_goal_water", 0);
-                int water_daily_value = 0;
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putInt("daily_water", water_daily_value);
-                editor.apply();
 
-                /**
-                 * CRUD Operations
-                 * */
-                // Inserting Contacts
-                Log.d("MyApp", "Inserting ..");
-                db.addUser(new User(id, username, password, e_mail, gender, age, country, daily_goal));
+        if(internetAvailability.isNetworkConnected()) {
+            // Checking Batch
+            if (db.checkBatchTable(user_id)) {
+                Cursor cursor = db.getBatchTable(user_id);
+                if (cursor != null) {
+                    do {
+                        String method = "insert_batch";
+                        int date_id = cursor.getInt(0);
+                        int value = cursor.getInt(1);
+                        String date = cursor.getString(2);
+                        int current_day = cursor.getInt(3);
+                        Log.d("MyApp", "**** Batch Information ****\nID : "+date_id+"\nValue : "+value+"\nDate : "+date+"\nCurrent Day : "+current_day);
+                        MainPartTask mainPartTask = new MainPartTask(getApplicationContext());
+                        MyTaskParams params = new MyTaskParams(method, date_id, value, date, current_day);
+                        mainPartTask.execute(params);
+                    } while (cursor.moveToNext());
+                    boolean flag_delete = db.deleteBatchTable(user_id);
+                    Log.d("MyApp", "Flag Delete All : " + flag_delete);
+                }
+            }
+        }
+
+        // Checking and filling datas
+        checkTableIDisEmpty();
+
+        //Notification begins
+        notificationBegin();
+
+        //Functions
+        setWaterValue();
+        arcProgressFunctionWater();
+        actionButtonClick();
+        if (db.checkDateTableIDEmpty(user_id)) {
+            drawGrahps(db.getDateCount(user_id));
+        }
+
+    }
+    //onCreate Ends !
+
+    public void notificationBegin(){
+        //Notification
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        String test = sdf.format(cal.getTime());
+        String[] time = test.split(":");
+        if(Integer.parseInt(time[0])<end_value && Integer.parseInt(time[0])>start_value){
+            Log.e("MyApp", "Time : " + test + "\nExact Hour : " + time[0]);
+            if(prefs.getInt("active_notification",0)==0) {
+                active_notification++;
+                editor.putInt("active_notification", active_notification);
+                Log.d("MyApp", "Notification is activated !"+active_notification);
+                NotificationEventReceiver.setupAlarm(getApplicationContext());
+            }else
+                Log.d("MyApp", "Notification is ALREADY activated !");
+        }
+
+    }
+
+    public void checkTableIDisEmpty(){
+
+        if(!db.checkDateTableIDEmpty(user_id)) {
+            int id = prefs.getInt("user_id", 0);
+            String e_mail = prefs.getString("user_email", "No E-Mail found, we might missed it, Sorry :(");
+            String gender = prefs.getString("gender", "No Gender found, we might have missed it, Sorry :(");
+            int age = prefs.getInt("age", 0);
+            String country = prefs.getString("country", "No Country found, we might have missed it, Sorry :(");
+            daily_goal = prefs.getInt("daily_goal_water", 0);
+            int water_daily_value = 0;
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putInt("daily_water", water_daily_value);
+            editor.apply();
+
+            /**
+             * CRUD Operations
+             * */
+            // Inserting Contacts
+            Log.d("MyApp", "Inserting ..");
+            db.addUser(new User(id, username, password, e_mail, gender, age, country, daily_goal));
             Log.d("MyApp", "date table is empty ! User ID : " + user_id + "\nValue : " + getWater() + "\nDate : " + now);
             String method;
             Log.d("MyApp", "check net : "+internetAvailability.isNetworkConnected());
@@ -223,12 +284,12 @@ public class MainActivity extends AppCompatActivity {
                     MyTaskParams params2 = new MyTaskParams(prefs.getInt("daily_water",-1),getTheCurrentDay(),username,method);
                     mainPartTask2.execute(params2);
                 }
-                    db.updateDailyWaterValue(username, 0);
-                    Log.d("MyApp", "Day is different ! " + "\n+Exact_day1 : " + exact_day + "\nDB Day1 : " + db_day);
-                    editor.putInt("daily_water", 0);
-                    editor.apply();
-                    db.updateDay(exact_day, username);
-               }
+                db.updateDailyWaterValue(username, 0);
+                Log.d("MyApp", "Day is different ! " + "\n+Exact_day1 : " + exact_day + "\nDB Day1 : " + db_day);
+                editor.putInt("daily_water", 0);
+                editor.apply();
+                db.updateDay(exact_day, username);
+            }
             if (!db.checkDateValue(user_id, now)) {
                 Log.d("MyApp", "Table is exist! User ID : " + db.getUserID(username) + "\nValue : " + getWater() + "\nDate : " + now);
                 if(internetAvailability.isNetworkConnected()){
@@ -243,32 +304,8 @@ public class MainActivity extends AppCompatActivity {
                     db.insertDateBatch(user_id, getWater(), now, getTheCurrentDay());
                 }
                 db.insertDate(user_id, getWater(), now, getTheCurrentDay());
-               }
             }
-        //Notification
-        Calendar cal = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-        String test = sdf.format(cal.getTime());
-        String[] time = test.split(":");
-        if(Integer.parseInt(time[0])<22 && Integer.parseInt(time[0])>8){
-            Log.e("MyApp", "Time : " + test + "\nExact Hour : " + time[0]);
-            if(prefs.getInt("active_notification",0)==0) {
-                active_notification++;
-                editor.putInt("active_notification", active_notification);
-                Log.d("MyApp", "Notification is activated !"+active_notification);
-                NotificationEventReceiver.setupAlarm(getApplicationContext());
-            }else
-                Log.d("MyApp", "Notification is ALREADY activated !");
         }
-
-        //Functions
-        setWaterValue();
-        arcProgressFunctionWater();
-        actionButtonClick();
-        if (db.checkDateTableIDEmpty(user_id)) {
-            drawGrahps(db.getDateCount(user_id));
-        }
-
     }
 
     public int getWater(){

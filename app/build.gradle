@@ -34,9 +34,9 @@ dependencies {
     compile 'com.facebook.android:facebook-android-sdk:4.1.0'           // Facebook SDK
     compile 'com.github.lzyzsd:circleprogress:1.1.0@aar'                // Progress Bar
     compile 'com.getbase:floatingactionbutton:1.10.0'                   // Floating Button
-    compile 'com.github.clans:fab:1.6.1'                                //FAB BUTTON
-    compile 'com.github.PhilJay:MPAndroidChart:v2.1.6'                  //Charts PhilJay:MPAndroidChart
-
+    compile 'com.github.clans:fab:1.6.1'                                // FAB BUTTON
+    compile 'com.github.PhilJay:MPAndroidChart:v2.1.6'                  // Charts PhilJay:MPAndroidChart
+    compile 'org.adw.library:discrete-seekbar:1.0.0'                    // Custom SeekBar
     //compile 'com.parse.bolts:bolts-android:1.+'   //Parse.com
     //compile 'com.parse:parse-android:1.+'         //Parse.com
 }

@@ -44,6 +44,7 @@ public class MyTaskParams {
         this.daily_water = daily_water;
     }
 
+    // Values of Batch OR User_Date Table
     public MyTaskParams(String method, int user_id, int daily_water, String date, int current_day) {
         this.method = method;
         this.user_id = user_id;

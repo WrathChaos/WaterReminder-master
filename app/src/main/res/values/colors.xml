@@ -48,6 +48,13 @@
     <!-- MyReds -->
     <color name="mySkyRedDark">#f0534a</color>
     <color name="mySkyRedLight">#ffe0df</color>
+    <color name="mySunRising">#ffeb94</color>
+    <color name="mySunRisingDark">#8e750a</color>
+
+    <color name="mySunset">#781902</color>
+
+
+
 
 
 </resources>

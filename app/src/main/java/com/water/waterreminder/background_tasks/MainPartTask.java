@@ -31,6 +31,8 @@ public class MainPartTask extends AsyncTask<MyTaskParams,Void,Void> {
         Log.d("MyApp", "Method : "+method);
         String main_part_url = "http://keepinprogress.com/db_main_part.php";
         String update_day = "http://keepinprogress.com/db_update_day.php";
+        String function_url = "http://keepinprogress.com/db_functions.php";
+
         if (method.equals("update_water")) {
             try {
                 URL url = new URL(main_part_url);
@@ -108,6 +110,39 @@ public class MainPartTask extends AsyncTask<MyTaskParams,Void,Void> {
                 IS.close();
             } catch (Exception e) {
                 Log.d("MyApp", "ERROR URL in MainActivity Update DAY");
+                e.printStackTrace();
+            }
+        }else if(method.equals("insert_batch")){
+            Log.d("MyApp", "BATCH !");
+            int date_id = params[0].user_id;
+            int value = params[0].daily_water;
+            String date = params[0].date;
+            int current_day = params[0].current_day;
+            try {
+                URL url = new URL(function_url);
+                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoOutput(true);
+                Log.d("MyApp", "httpConnection BATCH : "+httpURLConnection);
+                OutputStream OS = httpURLConnection.getOutputStream();
+                Log.d("MyApp", "OS BATCH : "+OS);
+                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(OS, "UTF-8"));
+                Log.d("MyApp", "bufferedWriter BATCH : "+bufferedWriter);
+                String data =
+                        URLEncoder.encode("method", "UTF-8") + "=" + URLEncoder.encode(method, "UTF-8") + "&" +
+                        URLEncoder.encode("date_id", "UTF-8") + "=" + URLEncoder.encode("" + date_id, "UTF-8")+"&"+
+                        URLEncoder.encode("value", "UTF-8") + "=" + URLEncoder.encode(""+value, "UTF-8") + "&" +
+                        URLEncoder.encode("date", "UTF-8") + "=" + URLEncoder.encode("" + date, "UTF-8")+"&"+
+                        URLEncoder.encode("current_day", "UTF-8") + "=" + URLEncoder.encode("" + current_day, "UTF-8");
+                Log.d("MyApp", "BATCH Data : "+data);
+                bufferedWriter.write(data);
+                bufferedWriter.flush();
+                bufferedWriter.close();
+                OS.close();
+                InputStream IS = httpURLConnection.getInputStream();
+                IS.close();
+            } catch (Exception e) {
+                Log.d("MyApp", "ERROR URL in MainActivity Batch Insertion");
                 e.printStackTrace();
             }
         }

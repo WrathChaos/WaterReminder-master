@@ -2,12 +2,14 @@ package com.water.waterreminder;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,6 +22,8 @@ import android.widget.TextView;
 
 import com.water.waterreminder.anim.AnimationUtils;
 import com.water.waterreminder.pojos.Devs;
+
+import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
 import java.util.ArrayList;
 
@@ -34,6 +38,15 @@ public class SettingsActivity extends AppCompatActivity {
 
     //Notification
     Switch switch1;
+    //SeekBars
+    DiscreteSeekBar seekBar;
+    DiscreteSeekBar seekBar2;
+    int start_value;
+    int end_value;
+
+    //SharedPreferences
+    SharedPreferences prefs;
+    SharedPreferences.Editor editor;
 
 
     @Override
@@ -45,11 +58,60 @@ public class SettingsActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         switch1 = (Switch) findViewById(R.id.switch1);
+        seekBar = (DiscreteSeekBar) findViewById(R.id.seekBar_start);
+        seekBar2 = (DiscreteSeekBar) findViewById(R.id.seekBar_end);
+
+        prefs = getSharedPreferences("user_info", MODE_PRIVATE);
+        editor = prefs.edit();
 
 
         fillDevs();
         recyclerView.setAdapter(new MyRecyclerAdapter(this, list));
 
+        //SeekBar changeListener method
+        seekBarChangeListener();
+    }
+
+    public void seekBarChangeListener(){
+
+        seekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
+            @Override
+            public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(DiscreteSeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(DiscreteSeekBar seekBar) {
+                start_value = seekBar.getProgress();
+                Log.d("MyApp", "Start Value : "+start_value);
+                editor.putInt("start_value",start_value);
+                editor.apply(); // This line is IMPORTANT !
+            }
+        });
+        seekBar2.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
+            @Override
+            public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(DiscreteSeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(DiscreteSeekBar seekBar) {
+                end_value = seekBar2.getProgress();
+                Log.d("MyApp", "End Value : "+end_value);
+                editor.putInt("end_value",end_value);
+                editor.apply(); // This line is IMPORTANT !
+            }
+        });
     }
 
 

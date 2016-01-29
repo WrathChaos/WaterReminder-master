@@ -45,10 +45,10 @@ public class DBAdapter extends SQLiteOpenHelper {
 
     //Batch Table
 
-    public static final String KEY_DATE_ID_BATCH = "date_id";
-    public static final String KEY_VALUE_BATCH = "value";
-    public static final String KEY_DATE_BATCH = "date";
-    public static final String KEY_CURRENT_DATE_BATCH = "current_day";
+    public static final String KEY_DATE_ID_BATCH        = "date_id";
+    public static final String KEY_VALUE_BATCH          = "value";
+    public static final String KEY_DATE_BATCH           = "date";
+    public static final String KEY_CURRENT_DATE_BATCH   = "current_day";
 
     private static final String TAG = "DBAdapter";
 
@@ -403,10 +403,39 @@ public class DBAdapter extends SQLiteOpenHelper {
         values.put(KEY_DATE_BATCH, date);
         values.put(KEY_CURRENT_DATE_BATCH,current_date);
 
-        Log.d("MyApp", "Date is created!");
+        Log.d("MyApp", "Batch is created!");
         // Inserting Row
-        db.insertWithOnConflict(DATABASE_TABLE_BATCH, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+        db.insert(DATABASE_TABLE_BATCH, null, values);
         db.close(); // Closing database connection
+    }
+
+    public boolean checkBatchTable(int id){
+        String sql = "SELECT "+KEY_DATE_ID_BATCH+" FROM " + DATABASE_TABLE_BATCH + " WHERE "+ KEY_DATE_ID_BATCH + " = "+id;
+        Log.d("MyApp", "SQL BATCH : " + sql);
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(sql, null);
+        if (cursor.moveToFirst()) {
+            Log.d("MyApp", "batch table is exist");
+            return true;
+        } else {
+            Log.d("MyApp", "batch table is NOT exist");
+            return false;
+        }
+    }
+    public Cursor getBatchTable(int id){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String sql = " SELECT "+ KEY_DATE_ID_BATCH +","+KEY_VALUE_BATCH+","+KEY_DATE_BATCH+","+KEY_CURRENT_DATE_BATCH+ " FROM "+ DATABASE_TABLE_BATCH +" WHERE "+ KEY_DATE_ID_BATCH + "=" + id;
+        Log.d("MyApp", "date value sql : "+sql);
+        Cursor cursor = db.rawQuery(sql, null);
+        if (cursor.moveToFirst()) {
+            return cursor;
+        }
+        return null;
+    }
+
+
+    public boolean deleteBatchTable(int date_id){
+        return db.delete(DATABASE_TABLE_BATCH, KEY_DATE_ID_BATCH + "=" + date_id, null) > 0;
     }
 
     public int getDateCount(int id){
@@ -464,6 +493,7 @@ public class DBAdapter extends SQLiteOpenHelper {
         //return db.update(DATABASE_TABLE, values, selection, selectionArgs);
         return db.update(DATABASE_TABLE_BATCH, values, selection, selectionArgs);
     }
+
 
 
     public boolean checkDateValue(int user_id,String now) {
