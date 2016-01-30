@@ -8,7 +8,7 @@ import android.util.Log;
 import java.net.InetAddress;
 
 /**
- * Created by kurayogun on 25/01/16.
+ * Created by freakycoder on 25/01/16.
  */
 public class InternetAvailability {
 
@@ -26,6 +26,8 @@ public class InternetAvailability {
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
+
+
 
 /*
     public boolean isInternetAvailable() {
@@ -47,12 +49,7 @@ public class InternetAvailability {
         }else{
             Log.d("MyApp", "No Internet 2nd Else");
             return false;
-
         }
-
     }
     */
-
-
-
 }

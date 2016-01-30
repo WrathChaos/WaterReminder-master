@@ -49,6 +49,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ExecutionException;
+
 import static com.github.mikephil.charting.animation.Easing.EasingOption.EaseInOutQuad;
 
 
@@ -163,8 +165,21 @@ public class MainActivity extends AppCompatActivity {
 
         if(internetAvailability.isNetworkConnected()) {
             // User_ID from Server
-            user_id = prefs.getInt("user_id", 0);
-            Log.d("MyApp", "SERVER USER ID : " + user_id);
+            //user_id = prefs.getInt("user_id", 0);
+            String method = "get_user_id";
+            MainPartTask mainPartTask = new MainPartTask(this);
+            MyTaskParams params = new MyTaskParams(method,username,true);
+            String user_id_string = null;
+            try {
+                user_id_string = mainPartTask.execute(params).get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+            Log.d("MyApp", "SERVER USER ID : " + user_id_string);
+            user_id = Integer.parseInt(user_id_string);
+            editor.putInt("user_id",user_id);
         }else{
             Cursor cursor = db.getUserID(username);
             user_id = cursor.getInt(0);
@@ -174,6 +189,7 @@ public class MainActivity extends AppCompatActivity {
         if(internetAvailability.isNetworkConnected()) {
             // Checking Batch
             if (db.checkBatchTable(user_id)) {
+                Log.d("MyApp", "Batch Table is here");
                 Cursor cursor = db.getBatchTable(user_id);
                 if (cursor != null) {
                     do {

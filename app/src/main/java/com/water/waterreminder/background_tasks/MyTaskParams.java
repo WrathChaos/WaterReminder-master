@@ -79,4 +79,10 @@ public class MyTaskParams {
         this.method = method;
         this.email = email;
     }
+
+    // Get User ID from Server
+    public MyTaskParams(String method, String username,boolean flag) {
+        this.method = method;
+        this.username = username;
+    }
 }
